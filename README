@@ -1,0 +1,14 @@
+README
+
+Yet another JS async loader. What are the specificities ?
+- small enough to be put inline in the HEAD : 2K with minification only
+- robust and cross browser : that's a fork of the famous LazyLoad lib
+- with modules developers in mind : somewhere in your HTML template, simply declare the full list of JS dependancies, your callback, et voilà
+- optimized : does all what it can to not block the browser, download each file only once
+
+
+Is Lazy loading efficient ?
+If your page is heavy, it's visually more efficient to lazy load ASAP in the source loads of JS files, rather than having them concatenated at the bottom and execute all at the same time. The user sees the top modules enhanced with JS much sooner, and that's what matters.
+
+Future :
+- be extendable : have a hook to add rules, like grouping the calls
