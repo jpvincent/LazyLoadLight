@@ -23,19 +23,34 @@
 				text-align: center;
 			}
 		</style>
-		<!-- they said "the only script in your head". Well, if it's light, why not inline it ?
-		<script src="./lazyLoadLight.js"></script>
-		-->
-		<script>(function(a,b){"use strict";var c=function(a){function g(b){var c=a.createElement("script"),d;for(d in b){if(b.hasOwnProperty(d)){c.setAttribute(d,b[d])}}return c}function h(){var a=d,b,c;if(a){b=a.callback;c=a.urls;c.shift();e=0;if(!c.length){b&&b.call(a.context,a.obj);d=null;f.length&&j()}}}function i(){var c=navigator.userAgent;b={async:a.createElement("script").async===true};(b.webkit=/AppleWebKit\//.test(c))||(b.ie=/MSIE/.test(c))||(b.opera=/Opera/.test(c))||(b.gecko=/Gecko\//.test(c))||(b.unknown=true)}function j(e,j,k,l){var m=function(){h()},n=[],o,p,q,r,s,t;b||i();if(e){e=typeof e==="string"?[e]:e.concat();if(b.async||b.opera){f.push({urls:e,callback:j,obj:k,context:l})}else{for(o=0,p=e.length;o<p;++o){f.push({urls:[e[o]],callback:o===p-1?j:null,obj:k,context:l})}}}if(d||!(r=d=f.shift())){return}c||(c=a.head||a.getElementsByTagName("head")[0]);s=r.urls;for(o=0,p=s.length;o<p;++o){t=s[o];q=g({src:t});q.async=false;q.className="lazyload";q.setAttribute("charset","utf-8");if(b.ie){q.onreadystatechange=function(){if(/loaded|complete/.test(q.readyState)){q.onreadystatechange=null;m()}}}else{q.onload=q.onerror=m}n.push(q)}for(o=0,p=n.length;o<p;++o){c.appendChild(n[o])}}var b,c,d=false,e=0,f=[];return{load:j}}(b.document);var d={};var e={};var f=function(){for(var a in e){var b=true,c=e[a];for(var f=0,g=c.aDependancies.length;f<g;f++){if(d[c.aDependancies[f]]!==2){b=false}}if(b===true){for(var f=0;f<c.aCallbacks.length;f++){setTimeout(c.aCallbacks[f],0)}delete e[a]}}};var g="";var h=/^http|\/\//;a.lazyLoadLight=function(b,i){var j=[],k=[],l;for(var m=0,n=b.length;m<n;m++){l=b[m].match(h)?b[m]:g+b[m];if(!d[l]){j.push(l);d[l]=1}k.push(l);b[m]=l}k=k.join("|");if(!e[k]){e[k]={aDependancies:b,aCallbacks:[]}}e[k].aCallbacks.push(i);if(j.length>0){c.load(j,function(){for(var b=0,c=j.length;b<c;b++){d[j[b]]=2}f()})}else{f()}};a.lazyLoadLight.setBasePath=function(a){g=a}})(this.MY_NAMESPACE||this,this)
+		<!-- they said "the only script in your head". Well, if it's light, why not inline it ? -->
+		<script>
+(function(a){var c=document.createElement,d=document.getElementsByTagName("SCRIPT")[0],e=/MSIE/.test(navigator.userAgent),f=function(a){var b=document.createElement("script");b.src=a,e===!0?b.async=!1:b.async=!0,b.className="lazyloadlight",e===!0?b.onreadystatechange=function(){/loaded|complete/.test(b.readyState)&&(b.onreadystatechange=null,g(a))}:b.onload=b.onerror=function(){g(a)},d.parentNode.appendChild(b)},g=function(a){k[a]=1,h(a)},h=function p(a){if(j[a])for(var b in j[a])if(b!="callback"&&k[b]<1)return!1;switch(k[a]){case 1:for(var b in i[a])if(b==="callback"){for(var c=0;c<i[a].callback.length;c++)setTimeout(i[a].callback[c],0);i[a].callback=[]}else delete i[a][b],p(b);break;case 0:return!1;case-1:k[a]=0,f(a);break;default:throw new Error("sorry ?")}},i={},j={},k={},l="",m=/^http|\/\//;"use strict";a.lazyLoadLight=function(a,b){var c,d,e,f,g;for(f=0,g=a.length;f<g;f++)c=a[f].match(m)?a[f]:l+a[f],i[c]||(i[c]={},j[c]={},k[c]=k[c]||-1),d?(i[d][c]=!0,j[c][d]=!0):e=c,d=c;i[c].callback||(i[c].callback=[]),i[c].callback.push(b),h(e)},a.lazyLoadLight.setBasePath=function(a){l=a}})(this.YOUR_NAMESPACE||this,this)
 		</script>
 	</head>
 	<body>
+		<h1>Look at the source, Luke</h1>
+		<div id="blocking-script">Never-responding script was called, so this block is never enhanced but the rest of the page works fine</div>
+		<script>
+			//debugger;
+			lazyLoadLight(
+				// list dependancies
+				[	"http://code.jquery.com/jquery-latest.min.js",
+					'http://blackhole.webpagetest.org/never-responding.js' // thanks to Pat Neeman for providing this host
+				],
+				function() {
+						$('#blocking-script').html('This content has been enhanced after the timeout of a never-responding script');
+					}
+				);
+		</script>
+		
 		<div id="container"><div><progress>Not yet enhanced content</progress></div></div>
 		<script>
 			lazyLoadLight(
 				// list dependancies
-				[	"http://code.jquery.com/jquery-1.7.2.min.js",
-					"http://underscorejs.org/underscore-min.js"],
+				[	"http://code.jquery.com/jquery-latest.min.js",
+					"http://underscorejs.org/underscore-min.js"
+				],
 					function() {
 						// oh yeah, we needed jQuery to do that !
 						$('#container').html('Content lazily enhanced');
@@ -46,7 +61,8 @@
 		<script>
 			lazyLoadLight(
 				// list dependancies
-				[	"http://code.jquery.com/jquery-1.7.2.min.js"],
+				[	"http://code.jquery.com/jquery-latest.min.js"
+				],
 					function() {
 						// oh yeah, we needed jQuery to do that too !
 						$('#container2').html('Content 2 lazily enhanced, without re-downloading jQuery');
@@ -55,6 +71,7 @@
 		</script>
 
 		<div id="perf-killers"><div>
+			Can even lazy load famous performance killers : 
 			<div id="fb-root"></div>
 			<div class="g-plusone" data-size="medium" data-href="https://plus.google.com/112103998865541703481/posts" id="plusone"></div>
 		</div></div>
