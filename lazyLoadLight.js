@@ -25,7 +25,8 @@
 		var node = document.createElement('script');
 		node.src = sFileName;
 		if (bIsIE === true) {
-		    node.async = false; // IE cant' download scripts in parallel, but the packs are already loaded in parallel
+		    // node.async = false; // IE cant' download scripts in parallel, but the packs are already loaded in parallel
+		    // in HTML5 async = false is evaluated as async
 		} else {
 		    node.async = true; // other browsers can download in parallel while keeping the execution order
 	    }
