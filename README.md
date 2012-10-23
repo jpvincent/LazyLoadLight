@@ -38,16 +38,16 @@ If your page is heavy, it's visually more efficient to lazy load ASAP in the sou
 
 Future :
 --------
-* be extendable : add place for hooks
-* allow to lazy load the lazyLoadLight plugins
-* write a plugin for grouping the calls
+* be extendable : add plugins support
+* allow to lazy load the future lazyLoadLight plugins
+* write a first plugin for grouping the calls
 
 Supported Browsers
 ------------------
 
 * Firefox 2+
 * Google Chrome
-* Internet Explorer 6+
+* Internet Explorer 6 to 10
 * Opera 9+
 * Safari 3+
 * Mobile Safari
