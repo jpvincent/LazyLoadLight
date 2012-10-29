@@ -14,143 +14,207 @@
 * The loading technique comes from LazyLoad.
 * Above that, we manage to include only once each file and to concatenate them on the fly
 */
-    var createElement = document.createElement,
-        script = document.getElementsByTagName('SCRIPT')[0];
+    var script = document.getElementsByTagName('SCRIPT')[0];
     // sorry mom, no clean way to detect parallel downloads nor existence of onload event
     var bIsIE = /MSIE/.test( navigator.userAgent );
-  
-    var insertScript = function insertScript(sFileName) {
-        //if (env.async || env.opera) {
-			
-		var node = document.createElement('script');
-		node.src = sFileName;
-		if (bIsIE === true) {
-		    // node.async = false; // IE cant' download scripts in parallel, but the packs are already loaded in parallel
+
+	var bSupportsAsync = function() {
+		var script = document.createElement('SCRIPT');
+		script.async = true;
+		return ('async' in script);
+	}();
+
+  	var numberOfScriptDL = 0,
+  		numberOfScriptRequired = 0;
+
+
+    var insertScript = function insertScript(oFile) {
+		//console.log('will include script #'+numberOfScriptRequired++ +':'+oFile.sFileName);
+		//if (env.async || env.opera) {
+
+		var node = document.createElement('script'),
+			bDone = false;
+		node.type = 'text/javascript';
+
+		if(bSupportsAsync
+			&& !bIsIE) { // IE10 supports async, but in a different way than gecko or webkit
+			node.async = false;
+		}
+		node.defer = false;
+
+/*		if (bIsIE === true) {
+		    node.async = false; // IE cant' download scripts in parallel, but the packs are already loaded in parallel
 		    // in HTML5 async = false is evaluated as async
 		} else {
-		    node.async = true; // other browsers can download in parallel while keeping the execution order
+			node.async = false; // other browsers can download in parallel while keeping the execution order
+			//node.defer = false;
 	    }
+	*/
 		//node.async = false; // if set to false, browsers other than IE will block when 
 
 		node.className = 'lazyloadlight';
 		//node.setAttribute('charset', 'utf-8');
 
-		if (bIsIE === true) {
-			node.onreadystatechange = function () {
-				if (/loaded|complete/.test(node.readyState)) {
-					node.onreadystatechange = null;
-					finish(sFileName);
-				}
-			};
-		} else {
-			node.onload = node.onerror = function() { finish(sFileName); };
+
+		node.onload = node.onreadystatechange = function () {
+			var readyState = node.readyState;
+			if (	bDone === false
+					&& ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" )
+				) {
+				// Handle memory leak in IE
+				node.onload = node.onreadystatechange = null;
+				finish(oFile);
+				bDone = true;
+			}
+		};
+
+		node.src = oFile.sFileName;
+		//script.parentNode.appendChild( node );
+		script.parentNode.insertBefore(node, script);
+    };
+
+    var finish = function finish(oFile) {
+		// console.log('script '+numberOfScriptDL++ +' arrived '+oFile.sFileName);
+        status[ oFile.sFileName ] = 1; // mark as loaded
+        //runCallback(sFileName);
+		/*if (oFile.callback) {
+        	setTimeout(oFile.callback, 0);
+        	//oFile.callback();
+        }*/
+        aPacks[ oFile.iPackId ].current++;
+        runCallback(oFile.iPackId);
+        //setTimeout(readQueue, 0);
+        readQueue();
+    };
+
+	var runCallback = function runCallback(iPackId) {
+		// console.log(aPacks[ iPackId ]);
+		if(aPacks[ iPackId ].current === aPacks[ iPackId ].total ) {
+			if(aPacks[ iPackId ].callback) {
+				//setTimeout( aPacks[ iPackId ].callback, 0 );
+				aPacks[ iPackId ].callback.call(global);
+				delete aPacks[ iPackId ].callback;
+				// aPacks[ iPackId ].current++;
+			}/* else {
+				console.log('no callback');
+			}*/
+		}/* else {
+			console.log('skipped');
+		}*/
+
+		/*if (callbacks[sFileName]) {
+			for(var i = 0; i < callbacks[ sFileName ].length; i++) {
+				console.log('will execute callbacks for file '+sFileName);
+				setTimeout( callbacks[ sFileName ][i], 0);
+			}
+			// remove the callbacks
+			callbacks[ sFileName ] = [];
+    	};
+    	*/
+    };
+
+	var bIsReading = false; // lose lock system
+    var readQueue = function readQueue() {
+		/*if(bIsReading === true)
+			return false;
+		¨*/
+		bIsReading = true;
+
+		var oFile = dlQueue.shift();
+		if(oFile === undefined) {
+			// console.log('reached end of queue');
+			bIsReading = false;
+			return;
 		}
-		
-		script.parentNode.appendChild( node );
-    };
-    
-    var finish = function finish(sFileName) {
-        //console.log( 'finished ' + sFileName );
-        status[ sFileName ] = 1; // mark as loaded
-        readQueue( sFileName );
-    };
-    
-    var readQueue = function readQueue(sFileName) {
-        
-        // is dependancy loaded ?
-        if( deps[ sFileName ] ) {
-            for( var sDependancyName in deps[ sFileName ] ) {
-                if( sDependancyName != 'callback'
-                    && status[ sDependancyName ] < 1 ) {
-                    return false;
-                }
-            }
-        }
-        //console.log( status[ sFileName ] );
-        // already loaded ? call the dependancies
-        switch( status[ sFileName ] ) {
-            case 1: // loaded ? load the next dependancy
-                //debugger;
-                for( var sDependancyName in nextAction[ sFileName ] ) {
-                    // execute associated callbacks
-                    if( sDependancyName === 'callback' ) {
-                        for(var i = 0; i < nextAction[ sFileName ].callback.length; i++) {
-                            setTimeout( nextAction[ sFileName ].callback[i], 0);
-                        }
-                        // remove the callbacks
-                        nextAction[ sFileName ].callback = [];
-                    } else { // continue to get down the tree
-                        delete nextAction[ sFileName ][ sDependancyName ]; // deleting before running next item in the queue allows breaking circular references
-                        // but remove the leafs one by one
-                        readQueue( sDependancyName );
-                    }
-                }
-                break;
-            case 0: // loading ? well, just wait
-                return false;
-                break;
-            case -1: // not loaded ? start the download
-            //console.log('will insert '+ sFileName );
-                status[ sFileName ] = 0;
-                insertScript( sFileName );
-                break;
-            default:
-                throw new Error('sorry ?');
-        }
-            
-        
-    };
-    
-    var nextAction = {},
-        deps = {},
-        status = {}; // contains -1, 0, 1
-    
-    
-    
+		//console.log('required '+oFile.sFileName);
+		// already loaded ? call the dependancies
+		if(status[ oFile.sFileName ] === 1 ) {
+			// loaded ?
+			aPacks[ oFile.iPackId ].current++;
+			runCallback(oFile.iPackId);
+			//runCallback(sFileName);
+			/*if(oFile.callback) {
+				//setTimeout( oFile.callback, 0);
+				oFile.callback();
+			}*/
+			//setTimeout(readQueue, 0);
+			readQueue();
+		} else if(status[ oFile.sFileName ] === 0 ) {
+			return false;
+		} else if (status[ oFile.sFileName ] === -1) {
+			status[ oFile.sFileName ] = 0;
+			/*if(!oFile.callback) {
+				oFile.callback = readQueue;
+			}*/
+			// differ script insert, for FF to avoid double load
+			insertScript( oFile );
+			//setTimeout( function() {insertScript( oFile );}, 0);
+		} else {
+			throw new Error('sorry ?');
+		}
+	};
+
+	var	dlQueue = [],
+		aPacks = {},
+		//callbacks =  {},
+		status = {}; // contains -1, 0, 1
+
+
+
     var basePath = '';
     var regHTTP = /^http|\/\//;
-    // var iPackId = 0;
-    
-  // shortcut to the loader
-namespace.lazyLoadLight = function loadJS( list, callback ) {
-	
-	//iPackId++; // dowload packs in parallel
-	
-	var sFileName,
-	    sPrevious,
-	    sFirstFile;
-	
-	for(var i = 0, iLength = list.length; i < iLength; i++) {
-		// urls starting with http(s) or protocol-relative urls are not prefixed.
-		// the other are supposed domain relative, so we prefix them
-		sFileName = list[i].match( regHTTP ) ? list[i] : basePath+list[i];
-		
-		// register the new download
-		if( !nextAction[sFileName] ) {
-		    nextAction[sFileName] = {};
-		    deps[sFileName] = {};
-		    // mark as "to load" if not already loaded
-		    status[sFileName] = status[sFileName] || -1;
-        }
-        
-		// start by filling the 2 dependancy trees
-		if( sPrevious ) {
-		    nextAction[ sPrevious ][ sFileName ] = true;
-		    deps[ sFileName ][ sPrevious ] = true;
-		} else {
-		    sFirstFile = sFileName;
+    var iPackId = 0;
+
+    // use the DOM to resolve URLs
+    var urlResolver = document.createElement('a');
+
+	  // shortcut to the loader
+	namespace.lazyLoadLight = function loadJS( list, callback ) {
+		var sFileName,
+			sPrevious,
+			sFirstFile;
+
+		iPackId++;
+
+		//console.log('will insert ', list);
+		for(var i = 0, iLength = list.length; i < iLength; i++) {
+			// use the DOM to resolve URLs
+			urlResolver.href = list[i];
+			sFileName = urlResolver.href.toString(); 
+			sFileName = sFileName.match( regHTTP ) ? sFileName : basePath+sFileName;
+
+			// the last file is responsible for running the callback
+			//dlQueue[dlQueue.length-1].callback = callback;
+
+			// record the new download
+			dlQueue.push( {
+					iPackId:iPackId,
+					sFileName:sFileName/*,
+					callback: (i === iLength-1)?callback:null // last included file triggers the callback
+					*/
+				});
+			// mark as "to load" if not already loaded
+			if( !(sFileName in status) ) {
+				status[sFileName] = -1;
+
+			}
+		}
+		// trigger the callback once per downloaded pack. Last file was not working on some browsers
+		aPacks[iPackId] = {
+			total: iLength,
+			current:0,
+			callback:callback
+		};
+		/*if( !callbacks[ sFileName ] ) {
+		    callbacks[ sFileName ] = [];
 	    }
-		sPrevious = sFileName;
-	}
-	// the last file is responsible for running the callback
-	if( !nextAction[ sFileName ].callback ) {
-	    nextAction[ sFileName ].callback = [];
-    }
-	nextAction[ sFileName ].callback.push( callback );
-	
-	// start the process
-	readQueue( sFirstFile );
-};
+		callbacks[ sFileName ].push( callback );*/
+		//console.log(dlQueue);
+		// start the process
+		//setTimeout(readQueue, 0);
+		if(bIsReading === false)
+			readQueue();
+	};
 
 	// will be used for relative urls
 	namespace.lazyLoadLight.setBasePath = function(sBase) {
@@ -158,4 +222,4 @@ namespace.lazyLoadLight = function loadJS( list, callback ) {
 	};
 
 // by default, registered in the global namespace (that's bad, change that)
-}( this.YOUR_NAMESPACE || this, this));
+}( window.YOUR_NAMESPACE || this, this));
