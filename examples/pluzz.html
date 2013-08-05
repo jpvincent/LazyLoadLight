@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="fr-FR" >
+	<head prefix="og:http://ogp.me/ns# fb:http://ogp.me/ns/fb# website:http://ogp.me/ns/website#">
+	  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="http://static-pluzz.francetv.fr/img/logo.png" />
+<meta property="og:title" content="francetv pluzz" />
+<meta property="og:description" content="francetv pluzz permet de voir, revoir et partager les programmes de France Télévisions en direct ou à la demande sur tous vos écrans !" />	  	
+	  			<link href="http://static-pluzz.francetv.fr/css/style.css.php" media="screen" rel="stylesheet" type="text/css" />	  	
+		<meta property="fb:app_id" content="461153900577136"> 
+		<meta property="og:url" content="http://pluzz.francetv.fr/?cp=FR"> 
+		<meta property="og:site_name" content="Pluzz">
+		<meta http-equiv="robots" content="index, follow" />
+		<meta http-equiv="content-language" content="fr">
+		<title>francetv pluzz - voir, revoir et partager les programmes de France Télévisions en direct ou à la demande</title>
+	  <!--[if lt IE 9]>
+		<script>
+		(function(l,f){function m(){var a=e.elements;return"string"==typeof a?a.split(" "):a}function i(a){var b=n[a[o]];b||(b={},h++,a[o]=h,n[h]=b);return b}function p(a,b,c){b||(b=f);if(g)return b.createElement(a);c||(c=i(b));b=c.cache[a]?c.cache[a].cloneNode():r.test(a)?(c.cache[a]=c.createElem(a)).cloneNode():c.createElem(a);return b.canHaveChildren&&!s.test(a)?c.frag.appendChild(b):b}function t(a,b){if(!b.cache)b.cache={},b.createElem=a.createElement,b.createFrag=a.createDocumentFragment,b.frag=b.createFrag();
+		a.createElement=function(c){return!e.shivMethods?b.createElem(c):p(c,a,b)};a.createDocumentFragment=Function("h,f","return function(){var n=f.cloneNode(),c=n.createElement;h.shivMethods&&("+m().join().replace(/\w+/g,function(a){b.createElem(a);b.frag.createElement(a);return'c("'+a+'")'})+");return n}")(e,b.frag)}function q(a){a||(a=f);var b=i(a);if(e.shivCSS&&!j&&!b.hasCSS){var c,d=a;c=d.createElement("p");d=d.getElementsByTagName("head")[0]||d.documentElement;c.innerHTML="x<style>article,aside,figcaption,figure,footer,header,hgroup,nav,section{display:block}mark{background:#FF0;color:#000}</style>";
+		c=d.insertBefore(c.lastChild,d.firstChild);b.hasCSS=!!c}g||t(a,b);return a}var k=l.html5||{},s=/^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,r=/^<|^(?:a|b|button|code|div|fieldset|form|h1|h2|h3|h4|h5|h6|i|iframe|img|input|label|li|link|ol|option|p|param|q|script|select|span|strong|style|table|tbody|td|textarea|tfoot|th|thead|tr|ul)$/i,j,o="_html5shiv",h=0,n={},g;(function(){try{var a=f.createElement("a");a.innerHTML="<xyz></xyz>";j="hidden"in a;var b;if(!(b=1==a.childNodes.length)){f.createElement("a");
+		var c=f.createDocumentFragment();b="undefined"==typeof c.cloneNode||"undefined"==typeof c.createDocumentFragment||"undefined"==typeof c.createElement}g=b}catch(d){g=j=!0}})();var e={elements:k.elements||"abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video",shivCSS:!1!==k.shivCSS,supportsUnknownElements:g,shivMethods:!1!==k.shivMethods,type:"default",shivDocument:q,createElement:p,createDocumentFragment:function(a,
+		b){a||(a=f);if(g)return a.createDocumentFragment();for(var b=b||i(a),c=b.frag.cloneNode(),d=0,e=m(),h=e.length;d<h;d++)c.createElement(e[d]);return c}};l.html5=e;q(f)})(this,document);
+		</script>
+	  <![endif]-->
+		<script type="text/javascript">
+		isIE7 = false;
+		window.PLUZZ = {};
+		;(function(namespace, global) {
+			"use strict";
+		/**
+		* USAGE :
+		* lazyLoadLight(
+		* [ '/staticv2/js/jquery/jquery.js',
+		*   '/staticv2/js/jquery/jquery.plugin.js',
+		*   '/staticv2/js/homepage/your-custom-code.js'
+		* ],
+		* function() {
+		*   YOURCODE.init();
+		* });
+		*
+		* The loading technique comes from LazyLoad.
+		* Above that, we manage to include only once each file and to concatenate them on the fly
+		*/
+		    var script = document.getElementsByTagName('SCRIPT')[0];
+		    // sorry mom, no clean way to detect parallel downloads nor existence of onload event
+		    var bIsIE = /MSIE/.test( navigator.userAgent );
+
+			var bSupportsAsync = function() {
+				var script = document.createElement('SCRIPT');
+				script.async = true;
+				return ('async' in script);
+			}();
+
+		  	var numberOfScriptDL = 0,
+		  		numberOfScriptRequired = 0;
+
+
+		    var insertScript = function insertScript(oFile) {
+				//console.log('will include script #'+numberOfScriptRequired++ +':'+oFile.sFileName);
+				//if (env.async || env.opera) {
+
+				var node = document.createElement('script'),
+					bDone = false;
+				node.type = 'text/javascript';
+
+				if(bSupportsAsync
+					&& !bIsIE) { // IE10 supports async, but in a different way than gecko or webkit
+					node.async = false;
+				}
+				node.defer = false;
+
+		/*		if (bIsIE === true) {
+				    node.async = false; // IE cant' download scripts in parallel, but the packs are already loaded in parallel
+				    // in HTML5 async = false is evaluated as async
+				} else {
+					node.async = false; // other browsers can download in parallel while keeping the execution order
+					//node.defer = false;
+			    }
+			*/
+				//node.async = false; // if set to false, browsers other than IE will block when 
+
+				node.className = 'lazyloadlight';
+				//node.setAttribute('charset', 'utf-8');
+
+
+				node.onload = node.onreadystatechange = function () {
+					var readyState = node.readyState;
+					if (	bDone === false
+							&& ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" )
+						) {
+						// Handle memory leak in IE
+						node.onload = node.onreadystatechange = null;
+						finish(oFile);
+						bDone = true;
+					}
+				};
+
+				node.src = oFile.sFileName;
+				//script.parentNode.appendChild( node );
+				script.parentNode.insertBefore(node, script);
+		    };
+
+		    var finish = function finish(oFile) {
+				// console.log('script '+numberOfScriptDL++ +' arrived '+oFile.sFileName);
+		        status[ oFile.sFileName ] = 1; // mark as loaded
+		        //runCallback(sFileName);
+				/*if (oFile.callback) {
+		        	setTimeout(oFile.callback, 0);
+		        	//oFile.callback();
+		        }*/
+		        aPacks[ oFile.iPackId ].current++;
+		        runCallback(oFile.iPackId);
+		        //setTimeout(readQueue, 0);
+		        readQueue();
+		    };
+
+			var runCallback = function runCallback(iPackId) {
+				// console.log(aPacks[ iPackId ]);
+				if(aPacks[ iPackId ].current === aPacks[ iPackId ].total ) {
+					if(aPacks[ iPackId ].callback) {
+						//setTimeout( aPacks[ iPackId ].callback, 0 );
+						aPacks[ iPackId ].callback.call(global);
+						delete aPacks[ iPackId ].callback;
+						// aPacks[ iPackId ].current++;
+					}/* else {
+						console.log('no callback');
+					}*/
+				}/* else {
+					console.log('skipped');
+				}*/
+
+				/*if (callbacks[sFileName]) {
+					for(var i = 0; i < callbacks[ sFileName ].length; i++) {
+						console.log('will execute callbacks for file '+sFileName);
+						setTimeout( callbacks[ sFileName ][i], 0);
+					}
+					// remove the callbacks
+					callbacks[ sFileName ] = [];
+		    	};
+		    	*/
+		    };
+
+			var bIsReading = false; // lose lock system
+		    var readQueue = function readQueue() {
+				/*if(bIsReading === true)
+					return false;
+				¨*/
+				bIsReading = true;
+
+				var oFile = dlQueue.shift();
+				if(oFile === undefined) {
+					// console.log('reached end of queue');
+					bIsReading = false;
+					return;
+				}
+				//console.log('required '+oFile.sFileName);
+				// already loaded ? call the dependancies
+				if(status[ oFile.sFileName ] === 1 ) {
+					// loaded ?
+					aPacks[ oFile.iPackId ].current++;
+					runCallback(oFile.iPackId);
+					//runCallback(sFileName);
+					/*if(oFile.callback) {
+						//setTimeout( oFile.callback, 0);
+						oFile.callback();
+					}*/
+					//setTimeout(readQueue, 0);
+					readQueue();
+				} else if(status[ oFile.sFileName ] === 0 ) {
+					return false;
+				} else if (status[ oFile.sFileName ] === -1) {
+					status[ oFile.sFileName ] = 0;
+					/*if(!oFile.callback) {
+						oFile.callback = readQueue;
+					}*/
+					// differ script insert, for FF to avoid double load
+					insertScript( oFile );
+					//setTimeout( function() {insertScript( oFile );}, 0);
+				} else {
+					throw new Error('sorry ?');
+				}
+			};
+
+			var	dlQueue = [],
+				aPacks = {},
+				//callbacks =  {},
+				status = {}; // contains -1, 0, 1
+
+
+
+		    var basePath = '';
+		    var regHTTP = /^http|\/\//;
+		    var iPackId = 0;
+
+		    // use the DOM to resolve URLs
+		    var urlResolver = document.createElement('a');
+
+			  // shortcut to the loader
+			namespace.lazyLoadLight = function loadJS( list, callback ) {
+				var sFileName,
+					sPrevious,
+					sFirstFile;
+
+				iPackId++;
+
+				//console.log('will insert ', list);
+				for(var i = 0, iLength = list.length; i < iLength; i++) {
+					// use the DOM to resolve URLs
+					urlResolver.href = list[i];
+					sFileName = urlResolver.href.toString(); 
+					sFileName = sFileName.match( regHTTP ) ? sFileName : basePath+sFileName;
+
+					// the last file is responsible for running the callback
+					//dlQueue[dlQueue.length-1].callback = callback;
+
+					// record the new download
+					dlQueue.push( {
+							iPackId:iPackId,
+							sFileName:sFileName/*,
+							callback: (i === iLength-1)?callback:null // last included file triggers the callback
+							*/
+						});
+					// mark as "to load" if not already loaded
+					if( !(sFileName in status) ) {
+						status[sFileName] = -1;
+
+					}
+				}
+				// trigger the callback once per downloaded pack. Last file was not working on some browsers
+				aPacks[iPackId] = {
+					total: iLength,
+					current:0,
+					callback:callback
+				};
+				/*if( !callbacks[ sFileName ] ) {
+				    callbacks[ sFileName ] = [];
+			    }
+				callbacks[ sFileName ].push( callback );*/
+				//console.log(dlQueue);
+				// start the process
+				//setTimeout(readQueue, 0);
+				if(bIsReading === false)
+					readQueue();
+			};
+
+			// will be used for relative urls
+			namespace.lazyLoadLight.setBasePath = function(sBase) {
+				basePath = sBase;
+			};
+
+		// by default, registered in the global namespace (that's bad, change that)
+		}( PLUZZ, this));
+
+		</script>
+		
+		<script type="text/javascript">
+			//Tell pub script if gigaban can be removed if found pub_top_home
+			specialGigbanOnHome=true;		
+			PLUZZ.lazyLoadLight(
+				[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+				 	'http://static-pluzz.francetv.fr/js/jquery.cookie.js',
+					'http://static-pluzz.francetv.fr/js/mobile.redirect.js'], 
+				function() {
+					init_mobile_redirect(this);
+				});
+			var FACEBOOK_APPID='461153900577136';
+			var nb_col = 4;
+			var seuil_col = 1.25;
+		</script>
+	  	<!--[if IE 7]> <script> isIE7 = true; </script> <![endif]-->
+	</head>
+	<body class="home">
+		<script type="text/javascript">
+			document.body.className += " js";
+		</script>
+		<!-- liens evitement -->
+		<ul class="masque">
+			<li><a href="#recherche">Passer directement à la recherche</a></li>
+			<li><a href="#menu">Passer directement à la navigation</a></li>
+			<li><a href="#page">Passer directement au contenu</a></li>
+			<li><a href="#footer">Passer directement au pied de page</a></li>
+		</ul>
+		
+		<div id="fb-root"></div>
+	
+		<div id="container">
+					<header id="header">
+		<div id="header-container">
+			<div id="header-content" xtcz="Header">
+				<ul class="block connect"><li class="arche_logoff">	<div id="div_sign_in" class="div_sign_in" style="display:none;">
+<a href="https://user.francetv.fr/oauth/signin_pluzz?response_type=code&redirect_uri=http%3A%2F%2Fpluzz.francetv.fr%2Flogin%2F%3Forigin%3Dhttp%253A%252F%252Fpluzz.francetv.fr%252F%253Fcp%253DFR&client_id=mj6f5p3xdzbp5azf2gm3x2m3cdjkk3fb&xd_receiver=http%3A%2F%2Fpluzz.francetv.fr%2Fxdcomm.html&recover_password_callback=CAPTURE.recoverPasswordCallback" class="signin iframe"> se connecter </a>
+
+</div>
+<div id="div_signed_in" class="div_signed_in" style="display:none;">
+<div id="user_login"></div>
+<a href="#" class="mt-deconnecter" onclick="sso_logout();"> se déconnecter </a>
+</div>
+<script> function sso_logout() {
+	  JANRAIN.SSO.CAPTURE.logout({
+	      sso_server: "https://sso.francetv.fr",
+	      logout_uri: "/login/logout"	
+	  });
+};
+</script></li></ul>
+				
+<script type="text/javascript">
+	PLUZZ.lazyLoadLight(
+		[	"http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js",
+			"http://static-pluzz.francetv.fr/js/jquery.json.js",
+			"http://static-pluzz.francetv.fr/js/jquery.cookie.js"
+		],
+		function() {
+			if ($.cookie("authent") && $.cookie("authent").length>0){
+				authent = JSON.parse($.cookie("authent"));
+				$("#div_signed_in").show();
+			}
+			else {
+				$("#div_sign_in").show();
+			}
+	});
+</script>
+				<!-- Fin Navigation transversse-->
+					
+				<h1 class="pluzz-logo"><a title="Retour à l'accueil" href="http://pluzz.francetv.fr" data-xitiClickTags=',Header::Logo_Francetv_Pluzz,N'><img src="http://static-pluzz.francetv.fr/img/logo_beta.png" alt="Retour à l'accueil" /></a></h1>
+				
+				<div id="div_rechercehMonPluzzVAD">
+					<form method="get" action="http://pluzz.francetv.fr/recherche" id="form_recherche" name="form_recherche">
+    <label for="recherche"><span class="masque">Rechercher :</span></label>
+    <input type="text" id="recherche" name="recherche" placeholder="Rechercher parmi 1624 vidéos" value=""/>
+    <input type="submit" id="submit_recherche" name="submit_recherche" value="Rechercher" onclick="return xt_click(this, 'C', '', 'Header::Loupe_moteur', 'N');" />
+</form>
+					<ul class="btn_header">
+						<li class="bh_aide"><a title="Besoin d’aide ? C’est par ici !" href="http://pluzz.francetv.fr/aide.html" data-xitiClickTags=',Header::Aide,N'>Aide</a></li>
+						<li class="bh_acce"><a title="Mieux naviguer sur francetvpluzz" href="http://pluzz.francetv.fr/accessibilite.html" data-xitiClickTags=',Header::Accessibilite,N'>Accessibilité</a></li>
+					</ul>
+					<div id="div_vad">
+						<a title="Aller sur pluzz vidéo à la demande" href="http://pluzzvad.francetv.fr/" target="_blank" data-xitiClickTags=',Header::Pluzz_VAD,S'><span class="masque">Vidéo à la demande</span></a>
+					</div>
+				</div>
+				
+			</div>
+			<div class="pub-gigaban" id="eShowPubTop" xtcz="Bloc_Pub_Accueil">
+	<div class="adCtnt"></div>
+</div>	
+			</div>			
+			
+			<a id="pluzz-feedback" title="Répondre au questionnaire de satisfaction">Feedback</a>
+	
+			<script type="text/javascript">
+				PLUZZ.lazyLoadLight(
+					[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+					 	'http://static-pluzz.francetv.fr/js/feedback.js'], 
+					function() {
+						init_feedback();
+					});
+			</script>
+			
+			<nav id="menu">
+	<div class="menuContainer" xtcz="Menu_horizontal">
+		<ul class="menuChaine">
+			<li class="item hp-accueil">
+				<a href="http://pluzz.francetv.fr" class="m-link m-chaine" data-xitiClickTags=',Logo_Accueil,N'><img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/header/home.png" alt="Retour à la page d'accueil" /></a>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen">
+															<li>
+																			<a href="http://pluzz.francetv.fr/a-z/" data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::Toutes_les_chaines,N'>
+																				A-Z																			</a>
+																										</li>
+															<li>
+																			<a href="http://pluzz.francetv.fr/lesplusrecents/" data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::Toutes_les_chaines,N'>
+																				Les + récents																			</a>
+																										</li>
+															<li>
+																			<a href="http://pluzz.francetv.fr/dernierechance/" data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::Toutes_les_chaines,N'>
+																				Dernière chance																			</a>
+																										</li>
+															<li>
+																			<span class="entry">
+																				Depuis l'étranger																			</span>
+																												<ul class="gen-sous-menu">
+																							<li><a href="http://pluzz.francetv.fr/depuis-l-etranger/replay/" data-xitiClickTags=',Filtres_Menu::A_l_etranger::Chaines::Toutes_les_chaines,N'>En replay</a></li>
+																					</ul>
+								
+																	</li>
+															<li>
+																			<a href="http://pluzz.francetv.fr/enregion/" data-xitiClickTags=',Filtres_Menu::En_Region::Chaines::Toutes_les_chaines,N'>
+																				En région																			</a>
+																										</li>
+															<li>
+																			<a href="http://pluzz.francetv.fr/touspublics/" data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::Toutes_les_chaines,N'>
+																				Tous publics																			</a>
+																										</li>
+															<li>
+																			<a href="http://pluzz.francetv.fr/soustitre/" data-xitiClickTags=',Filtres_Menu::Sous_titre::Chaines::Toutes_les_chaines,N'>
+																				Sous-titrés																			</a>
+																										</li>
+													</ul>
+					</div>
+				</div>
+			</li>
+									<li class="item hp-la_1ere">
+				<span class="m-link m-chaine m-la_1ere">
+					<img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/logos/menu/la_1ere.png" alt="La 1ère" />
+				</span>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen">
+																								<li>
+																					<a href="http://pluzz.francetv.fr/a-z/la_1ere/"  data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::La_1ere,N'>
+																						A-Z																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/lesplusrecents/la_1ere/"  data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::La_1ere,N'>
+																						Les + récents																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/dernierechance/la_1ere/"  data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::La_1ere,N'>
+																						Dernière chance																					</a>
+																													</li>
+																																<li>
+																					<span class="entry">
+																						Depuis l'étranger																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/depuis-l-etranger/la_1ere/replay/" data-xitiClickTags=',Filtres_Menu::A_l_etranger::Chaines::La_1ere,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<span class="entry">
+																						En région																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/enregion/la_1ere/replay/" data-xitiClickTags=',Filtres_Menu::En_Region::Chaines::La_1ere,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/touspublics/la_1ere/"  data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::La_1ere,N'>
+																						Tous publics																					</a>
+																													</li>
+																					</ul>
+						<div class="rub">
+														<ul>
+								<li class="section dontend">Info</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/atu_dire_francais.html">Atu Dire (français)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/atu_dire_tahitien.html">Atu Dire (tahitien)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_13h_guadeloupe.html">JT 13h (Guadeloupe)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_13h_martinique.html">JT 13h (martinique)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_guadeloupe.html">JT Guadeloupe</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_guyane.html">JT Guyane</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_mayotte.html">JT Mayotte (français)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_nouvelle_caledonie.html">JT Nouvelle Calédonie</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_polynesie.html">JT Polynésie (français)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_reunion.html">JT Réunion </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_reunion_midi.html">JT Réunion Midi</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_saint_pierre_et_miquelon.html">JT Saint-Pierre et Miquelon</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_wallis_et_futuna_francais.html">JT Wallis et Futuna (français)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_wallis_et_futuna.html">JT Wallis et Futuna (wallisien)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/journal_du_pacifique.html">Journal du Pacifique</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/info_13h00_guyane.html">Midi Guyane</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ora_no_te_motu.html">Ora No te Motu</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/info_1ere.html">Soir 1ère</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_polynesie_polynesien.html">Ve'a Tahiti</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Magazine</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/7_actu.html">7 actu</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/7_jours.html">7 jours</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/invitez_qui_vous_voulez.html">Invitez qui vous voulez</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/itineraires.html">Itinéraires</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_sante_d_abord.html">La Santé d'Abord </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/parler_vrai.html">Parler vrai</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/pas_un_zeste.html">Pas un zeste</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/polynes_iles.html">Polynésîles</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/midi_services.html">Services 1ère</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/soyons_au_net.html">Soyons au net !</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ti_lison.html">Ti Lison</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ti_baba.html">Ti baba </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/toute_nouvelle_tendance.html">Toute nouvelle tendance</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Culture</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/a_haamana_o_na.html">A Haamana ona</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/b_world.html">B-World</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/fare_maohi.html">Fare Maohi</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/galigalang.html">Galigalang</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/parler_vrai.html">Parler vrai</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tendance_1ere.html">Tendance 1ère </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/zik_clip.html">Zic Clip</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Divertissement</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/stars_novelas_guadeloupe.html">Stars & Novelas - Guadeloupe</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/stars_novelas_martinique.html">Stars & Novelas - Martinique</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/stars_novelas_polynesie.html">Stars & Novelas - Polynésie</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/stars_novelas_reunion.html">Stars & Novelas - Réunion</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Sport</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/973_chrono.html">973 chrono</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/attitude_sport.html">Attitude Sport </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/code_phare.html">Code phare</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/infosports.html">Infosports</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_mag_des_sports.html">Le Mag des sports</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/sport_premiere.html">Sport première</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tua_ro_sports.html">Tuaro Sports</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeu</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/cash.html">Cash</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/qui_est_le_genie.html">Qui est le Genie ?"</a></li>
+																							</ul>
+																				</div>
+					</div>
+				</div>
+			</li>
+									<li class="item hp-france2">
+				<span class="m-link m-chaine m-france2">
+					<img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/logos/menu/france2.png" alt="France 2" />
+				</span>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen has-direct">
+																								<li class="direct direct-france2">
+										<a href="http://pluzz.francetv.fr/france2/" data-xitiClickTags=',En_Direct::France_2_en_Direct,N'>
+											<span class="direct-chaine">France 2</span>
+											<span class="direct-bold">En direct</span>
+										</a>
+									</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/a-z/france2/"  data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::France_2,N'>
+																						A-Z																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/lesplusrecents/france2/"  data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::France_2,N'>
+																						Les + récents																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/dernierechance/france2/"  data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::France_2,N'>
+																						Dernière chance																					</a>
+																													</li>
+																																<li>
+																					<span class="entry">
+																						Depuis l'étranger																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/depuis-l-etranger/france2/replay/" data-xitiClickTags=',Filtres_Menu::A_l_etranger::Chaines::France_2,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/touspublics/france2/"  data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::France_2,N'>
+																						Tous publics																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/soustitre/france2/"  data-xitiClickTags=',Filtres_Menu::Sous_titre::Chaines::France_2,N'>
+																						Sous-titrés																					</a>
+																													</li>
+																					</ul>
+						<div class="rub">
+														<ul>
+								<li class="section dontend">Info</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_06h30.html">JT 06h30</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_13h.html">JT 13h</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt20h.html">JT 20h</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Documentaire</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/du_baiser_au_baiser.html">Du baiser au baiser</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/du_bebe_au_baiser.html">Du bébé au baiser</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/grandeurs_nature.html">Grandeurs nature</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_gens_du_fleuve.html">Les gens du fleuve</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/sebastien_l_imitateur_cameleon.html">Sébastien, l'imitateur caméléon</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Série & fiction</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/amour_gloire_et_beaute.html">Amour gloire et beauté</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/boulevard_du_palais.html">Boulevard du Palais</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/castle_20h35.html">Castle</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/cain.html">Caïn</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/des_jours_et_des_vies.html">Des jours et des vies</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_smala_s_en_mele.html">La smala s'en mêle</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Magazine</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/13h15_le_dimanche.html">13h15, le Dimanche</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/13h15_le_samedi.html">13h15, le Samedi</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/cest_au_programme.html">C'est au programme</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/comment_ca_va_bien.html">Comment ca va bien ?</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/consomag.html">Consomag</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/des_paroles_et_des_actes.html">Des paroles et des actes</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/envoye_special_la_suite.html">Envoyé spécial - la suite</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/faites_entrer_l_accuse.html">Faites entrer l'accusé</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_jour_ou_tout_a_bascule.html">Le jour où tout a basculé</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/mots_croises.html">Mots croisés</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/on_nest_pas_couche.html">On n'est pas couché</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/paris_en_plus_grand.html">Paris en plus grand</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/toute_une_histoire.html">Toute une histoire</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/telematin.html">Télématin</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/un_jour_un_destin.html">Un jour, un destin</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/une_idee_de_ton_pere_f2.html">Une idée de ton père - F2</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/une_rencontre_une_chance_f2.html">Une rencontre, une chance - F2</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Culture</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_france_f2.html">(c) France - F2</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/dans_quelle_etagere.html">Dans quelle éta-gère</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/des_mots_de_minuit.html">Des mots de minuit</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/planete_musique_mag.html">Hebdo musique mag</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/plein_2_cine.html">Plein 2 ciné</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/the_ou_cafe.html">Thé ou café</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Divertissement</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_annees_bonheur.html">Les années bonheur</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ondar_show.html">ONDAR Show</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/on_n_demande_qu_a_en_rire.html">On n'demande qu'à en rire </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/roumanoff_et_les_garcons.html">Roumanoff et les garçons</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/taratata__france_2.html">Taratata - France 2</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/vivement_dimanche_prochain.html">Vivement dimanche prochain</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/vous_trouvez_ca_normal.html">Vous trouvez ça normal ?!</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Sport</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/stade_2.html">Stade 2</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeu</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_z_amours.html">Les Z'amours</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/motus.html">Motus</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/seriez_vous_un_bon_expert.html">Seriez-vous un bon expert ?</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tout_le_monde_veut_prendre_sa_place.html">Tout le monde veut prendre sa place</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/volte_face.html">Volte-face</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Autre</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/islam.html">Islam</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/judaica.html">Judaïca</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_jour_du_seigneur.html">Le Jour du Seigneur</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/meteo_jt_13h.html">Météo JT 13h</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/meteo_jt20h.html">Météo JT 20h</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/presence_protestante.html">Présence protestante</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/sagesses_bouddhistes.html">Sagesses bouddhistes</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/source_de_vie.html">Source de vie</a></li>
+																							</ul>
+																				</div>
+					</div>
+				</div>
+			</li>
+									<li class="item hp-france3">
+				<span class="m-link m-chaine m-france3">
+					<img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/logos/menu/france3.png" alt="France 3" />
+				</span>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen has-direct">
+																								<li class="direct direct-france3">
+										<a href="http://pluzz.francetv.fr/france3/" data-xitiClickTags=',En_Direct::France_3_en_Direct,N'>
+											<span class="direct-chaine">France 3</span>
+											<span class="direct-bold">En direct</span>
+										</a>
+									</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/a-z/france3/"  data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::France_3,N'>
+																						A-Z																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/lesplusrecents/france3/"  data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::France_3,N'>
+																						Les + récents																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/dernierechance/france3/"  data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::France_3,N'>
+																						Dernière chance																					</a>
+																													</li>
+																																<li>
+																					<span class="entry">
+																						Depuis l'étranger																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/depuis-l-etranger/france3/replay/" data-xitiClickTags=',Filtres_Menu::A_l_etranger::Chaines::France_3,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<span class="entry">
+																						En région																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/enregion/france3/replay/" data-xitiClickTags=',Filtres_Menu::En_Region::Chaines::France_3,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/touspublics/france3/"  data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::France_3,N'>
+																						Tous publics																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/soustitre/france3/"  data-xitiClickTags=',Filtres_Menu::Sous_titre::Chaines::France_3,N'>
+																						Sous-titrés																					</a>
+																													</li>
+																					</ul>
+						<div class="rub">
+														<ul>
+								<li class="section dontend">Info</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/12_13_dimanche.html">12-13 Dimanche</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_1213.html">JT 12-13 Edition Nationale</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/jt_1920.html">JT 19-20 Edition Nationale</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/soir_3.html">Soir 3</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Documentaire</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/des_histoires_de_violence.html">Des histoires de violence</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/il_n_y_a_pas_de_kennedy_heureux.html">Il n'y a pas de Kennedy heureux </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_anges_gardiens_de_l_autoroute.html">Les anges gardiens de l'autoroute</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/mont_blanc_l_ete_meurtrier.html">Mont-Blanc : l'été meurtrier</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/obama_l_homme_qui_voulait.html">Obama, l'homme qui voulait ...</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/un_hiver_avec_les_sauveteurs_du_mon.html">Un hiver avec les sauveteurs...</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Série & fiction</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_enquetes_de_murdoch.html">Les enquêtes de Murdoch </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/plus_belle_la_vie.html">Plus Belle La Vie</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/quand_l_amour_s_en_mele.html">Quand l'amour s'emmêle</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/si_pres_de_chez_vous.html">Si près de chez vous</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tempetes.html">Tempêtes</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/un_crime_oublie.html">Un crime oublié</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Magazine</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/30_millions_d_amis.html">30 millions d'amis</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/avenue_de_leurope.html">Avenue de l'Europe</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/cest_pas_sorcier.html">C'est pas sorcier</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/cote_jardin.html">Côté jardin</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/et_si_on_changeait_le_monde_f3.html">Et si on changeait le monde-F3</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/faut_pas_rever.html">Faut pas rêver</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/l_ombre_d_un_doute.html">L'ombre d'un doute</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/midi_en_france_1ere_partie.html">Midi en France </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/meteo_a_la_carte.html">Météo à la carte</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/une_idee_de_ton_pere_f3.html">Une idée de ton père - F3</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/une_rencontre_une_chance_f3.html">Une rencontre, une chance - F3</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/votre_tele_et_vous.html">Votre télé et vous</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Culture</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_france_f3.html">(c) France - F3</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ce_soir_ou_jamais.html">Ce soir (ou jamais!)</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/espace_francophone.html">Espace Francophone</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_carnets_de_julie.html">Les carnets de Julie</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/promenades_musicales_a_budapest.html">Promenades musicales à Budapest</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/un_livre_un_jour.html">Un livre un jour</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeunesse</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/angelo_la_debrouille.html">Angelo la débrouille </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ben_10_alien_force.html">Ben 10 Alien Force</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/chaplin_co.html">Chaplin & Co</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_dalton.html">Les Dalton</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/mandarine_cow.html">Mandarine & Cow</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/nini_patalo.html">Nini Patalo</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ninjago.html">Ninjago</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/oggy_et_les_cafards.html">Oggy et les cafards</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/une_minute_au_musee.html">Une minute au musée</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/winx_club.html">Winx Club </a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Divertissement</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/chabada.html">Chabada</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_grands_du_rire.html">Les grands du rire</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Sport</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/en_course_sur_france_3.html">En course sur France 3</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tout_le_sport.html">Tout le sport</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeu</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/des_chiffres_et_des_lettres.html">Des chiffres et des lettres</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/question_pour_un_super_champion.html">Question pour un super champion</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/questions_pour_un_champion.html">Questions Pour Un Champion</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/slam.html">Slam</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Autre</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/meteo_jt_1213.html">Météo JT 12-13</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/meteo_jt_1920.html">Météo JT 19-20</a></li>
+																							</ul>
+																				</div>
+					</div>
+				</div>
+			</li>
+									<li class="item hp-france4">
+				<span class="m-link m-chaine m-france4">
+					<img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/logos/menu/france4.png" alt="France 4" />
+				</span>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen has-direct">
+																								<li class="direct direct-france4">
+										<a href="http://pluzz.francetv.fr/france4/" data-xitiClickTags=',En_Direct::France_4_en_Direct,N'>
+											<span class="direct-chaine">France 4</span>
+											<span class="direct-bold">En direct</span>
+										</a>
+									</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/a-z/france4/"  data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::France_4,N'>
+																						A-Z																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/lesplusrecents/france4/"  data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::France_4,N'>
+																						Les + récents																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/dernierechance/france4/"  data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::France_4,N'>
+																						Dernière chance																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/touspublics/france4/"  data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::France_4,N'>
+																						Tous publics																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/soustitre/france4/"  data-xitiClickTags=',Filtres_Menu::Sous_titre::Chaines::France_4,N'>
+																						Sous-titrés																					</a>
+																													</li>
+																					</ul>
+						<div class="rub">
+														<ul>
+								<li class="section dontend">Documentaire</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/femmes_pilotes_de_chasse.html">Femmes pilotes de chasse</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Série & fiction</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/crash_canyon.html">Crash canyon</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/lignes_de_vie.html">Lignes de vie</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/metal_hurlant.html">Métal hurlant</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_f4.html">Plus Belle La Vie - F4</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Magazine</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/bons_plans.html">Bons plans</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Culture</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_france_f4.html">(c) France - F4</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/dj_zerba_aux_franco.html">DJ Zebra aux Franco</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_cine_de_luigi.html">Le ciné de Luigi</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/monte_le_son.html">Monte le son !</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/shirley_et_dino_spectacele_inedit.html">Shirley et Dino, spectacle inédit</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeunesse</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/code_lyoko.html">Code Lyoko</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/wakfu.html">Wakfu saison 1</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Divertissement</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/fideles_au_poste.html">Fidèles au poste !</a></li>
+																							</ul>
+																				</div>
+					</div>
+				</div>
+			</li>
+									<li class="item hp-france5">
+				<span class="m-link m-chaine m-france5">
+					<img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/logos/menu/france5.png" alt="France 5" />
+				</span>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen has-direct">
+																								<li class="direct direct-france5">
+										<a href="http://pluzz.francetv.fr/france5/" data-xitiClickTags=',En_Direct::France_5_en_Direct,N'>
+											<span class="direct-chaine">France 5</span>
+											<span class="direct-bold">En direct</span>
+										</a>
+									</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/a-z/france5/"  data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::France_5,N'>
+																						A-Z																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/lesplusrecents/france5/"  data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::France_5,N'>
+																						Les + récents																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/dernierechance/france5/"  data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::France_5,N'>
+																						Dernière chance																					</a>
+																													</li>
+																																<li>
+																					<span class="entry">
+																						Depuis l'étranger																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/depuis-l-etranger/france5/replay/" data-xitiClickTags=',Filtres_Menu::A_l_etranger::Chaines::France_5,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/touspublics/france5/"  data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::France_5,N'>
+																						Tous publics																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/soustitre/france5/"  data-xitiClickTags=',Filtres_Menu::Sous_titre::Chaines::France_5,N'>
+																						Sous-titrés																					</a>
+																													</li>
+																					</ul>
+						<div class="rub">
+														<ul>
+								<li class="section dontend">Documentaire</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/au_coeur_du_paradis_blanc.html">Au coeur du paradis blanc</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/empreintes.html">Empreintes </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/empreintes_programme_court.html">Empreintes - programme court</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/et_si_l_amour_m_etait_conte.html">Et si l'amour m'était conté</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/eugene_ionesco_quoi_de_neuf.html">Eugène Ionesco, quoi de neuf ?</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/in_vivo_l_integrale.html">In vivo, l'intégrale</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_galerie_france_5.html">La Galerie France 5 </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_routes_de_l_impossible.html">Les routes de l'impossible</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/petites_breves_de_prairie.html">Petites brèves de prairie</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/restauration_francaise.html">Restauration française...</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/superstructures_sos.html">Superstructures SOS</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/verdict.html">Verdict</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/vu_sur_terre.html">Vu sur terre</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Magazine</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/19h_paul_amar.html">19h Paul Amar</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/allo_rufo.html">Allo Rufo</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/allo_docteurs.html">Allô docteurs</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_dans_lair.html">C dans l'air</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_politique.html">C politique</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_a_dire.html">C à dire</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_a_vous.html">C à vous</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_a_vous_la_suite.html">C à vous, la suite</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_a_vous_les_meilleurs_moments.html">C à vous, le meilleur</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/cest_notre_affaire.html">C'est notre affaire</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/dr_cac_programme_long.html">Dr Cac</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/echappees_belles.html">Echappées belles </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/enquete_de_sante.html">Enquête de santé</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/et_si_on_changeait_le_monde_f5.html">Et si on changeait le monde - F5</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/lemploi_par_le_net.html">L'emploi par le net</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/loeil_et_la_main.html">L'oeil et la main</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_maison_france_5.html">La maison France 5</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_minute_des_aidants_f5.html">La minute des aidants F5</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_vinvinteur.html">Le Vinvinteur </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_magazine_de_la_sante.html">Le magazine de la santé</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_escapades_de_petitrenaud.html">Les escapades de Petitrenaud</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_maternelles.html">Les maternelles</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/medias_le_mag.html">Médias, le magazine</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/on_n_est_pas_que_des_cobayes.html">On n'est pas que des cobayes!</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/parlons_passion.html">Parlons Passion</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/silence_ca_pousse_.html">Silence, ça pousse !</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/une_idee_de_ton_pere_f5.html">Une idée de ton père - F5</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Culture</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/avis_de_sorties__france_5.html">Avis de sorties - France 5</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/entree_libre.html">Entrée libre </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_grande_librairie.html">La grande librairie</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeunesse</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/a_table_t_choupi.html">A table T'choupi</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/artzooka.html">Artzooka!</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/ava_riko_teo.html">Ava Riko Téo</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/chloe_magique.html">Chloé magique</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/didou.html">Didou</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/dino_train.html">Dino train</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_cuisine_est_un_jeu_d_enfants.html">La cuisine est un jeu d'enfants</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/lulu_vroumette.html">Lulu Vroumette</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/mini_loup.html">Mini loup</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/minuscule.html">Minuscule</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/sam_le_pompier.html">Sam le pompier</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/t_choupi_et_doudou.html">T'choupi et Doudou</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tickety_et_toc.html">Tickety et Toc</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/umizoomi.html">Umizoomi</a></li>
+																							</ul>
+																				</div>
+					</div>
+				</div>
+			</li>
+									<li class="item hp-franceo">
+				<span class="m-link m-chaine m-franceo">
+					<img class="logo-chaine-menu" src="http://static-pluzz.francetv.fr/img/logos/menu/franceo.png" alt="France Ô" />
+				</span>
+				<div class="ss-menu">
+					<div class="ss-menu-container">
+						<ul class="gen has-direct">
+																								<li class="direct direct-franceo">
+										<a href="http://pluzz.francetv.fr/franceo/" data-xitiClickTags=',En_Direct::France_o_en_Direct,N'>
+											<span class="direct-chaine">France Ô</span>
+											<span class="direct-bold">En direct</span>
+										</a>
+									</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/a-z/franceo/"  data-xitiClickTags=',Filtres_Menu::A-Z::Chaines::France_o,N'>
+																						A-Z																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/lesplusrecents/franceo/"  data-xitiClickTags=',Filtres_Menu::Les_plus_recents::Chaines::France_o,N'>
+																						Les + récents																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/dernierechance/franceo/"  data-xitiClickTags=',Filtres_Menu::Dernieres_chances::Chaines::France_o,N'>
+																						Dernière chance																					</a>
+																													</li>
+																																<li>
+																					<span class="entry">
+																						Depuis l'étranger																					</span>
+																															<ul class="gen-sous-menu">
+																									<li><a href="http://pluzz.francetv.fr/depuis-l-etranger/franceo/replay/" data-xitiClickTags=',Filtres_Menu::A_l_etranger::Chaines::France_o,N'>En replay</a></li>
+																							</ul>
+									
+																			</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/touspublics/franceo/"  data-xitiClickTags=',Filtres_Menu::Tous_publics::Chaines::France_o,N'>
+																						Tous publics																					</a>
+																													</li>
+																																<li>
+																					<a href="http://pluzz.francetv.fr/soustitre/franceo/"  data-xitiClickTags=',Filtres_Menu::Sous_titre::Chaines::France_o,N'>
+																						Sous-titrés																					</a>
+																													</li>
+																					</ul>
+						<div class="rub">
+														<ul>
+								<li class="section dontend">Info</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/info_afrique.html">Info Afrique</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/info_midi.html">Infô Midi</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/info_matin.html">Infô matin</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/info_soir.html">Infô soir</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Documentaire</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/explo.html">ExplÔ</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Série & fiction</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/blue_exorcist.html">Blue Exorcist</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/eyeshield_21.html">Eyeshield 21</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/famille_d_accueil_fo.html">Famille d'accueil - FÔ</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/india_a_love_story.html">India, a Love Story</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/la_reina_del_sur.html">La Reina del sur</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_clone.html">Le clone</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_corps_du_desir.html">Le corps du désir</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_fo.html">Plus Belle La Vie, la collec'</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/terres_de_legendes.html">Terres de légendes</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Magazine</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/10_minutes_pour_le_dire.html">10 minutes pour le dire</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/a_nous_deux.html">A nous deux</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/couleurs_outremers.html">Couleurs outremers</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/investigations.html">Investigatiôns</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_monde_vu_par.html">Le monde vu par...</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/les_petits_plats_de_babette.html">Les petits plats de Babette</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/petite_collection_couleurs.html">Petite collection couleurs </a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tendances_o.html">Tendances Ô</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/toutes_les_france.html">Toutes les France</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/o_bout_de_la_nuit.html">Ô bout de la nuit</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Culture</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/aline_afanoukoe_propose_de_deoouvri.html">Aline au pays des merveilles</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/c_koi_ta_zik.html">C koi ta Zik</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/le_lab_o.html">Le Lab. Ô</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/tropismes.html">Tropismes</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/magic_system.html">magic System</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Jeunesse</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/h2o_s3.html">H2O s3</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Divertissement</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/dance_street.html">Dance St !</a></li>
+																								<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/street_chef.html">Street Chef</a></li>
+																							</ul>
+																					<ul>
+								<li class="section dontend">Sport</li>
+								
+																<li class="prog-item"><a class="ellipsis" href="http://pluzz.francetv.fr/videos/riding_zone.html">Riding zone</a></li>
+																							</ul>
+																				</div>
+					</div>
+				</div>
+			</li>
+						</ul>
+			<ul class="menuRub">
+						<li class="item" data-rub="info">
+				<span class="m-link m-rub m-info">Info</span>
+			</li>
+						<li class="item" data-rub="documentaire">
+				<span class="m-link m-rub m-documentaire">Documentaire</span>
+			</li>
+						<li class="item" data-rub="seriefiction">
+				<span class="m-link m-rub m-seriefiction">Série & fiction</span>
+			</li>
+						<li class="item" data-rub="magazine">
+				<span class="m-link m-rub m-magazine">Magazine</span>
+			</li>
+						<li class="item" data-rub="culture">
+				<span class="m-link m-rub m-culture">Culture</span>
+			</li>
+						<li class="item" data-rub="jeunesse">
+				<span class="m-link m-rub m-jeunesse">Jeunesse</span>
+			</li>
+						<li class="item" data-rub="divertissement">
+				<span class="m-link m-rub m-divertissement">Divertissement</span>
+			</li>
+						<li class="item" data-rub="sport">
+				<span class="m-link m-rub m-sport">Sport</span>
+			</li>
+						<li class="item" data-rub="jeu">
+				<span class="m-link m-rub m-jeu">Jeu</span>
+			</li>
+						<li class="item" data-rub="autres">
+				<span class="m-link m-rub m-autres">Autre</span>
+			</li>
+					</ul>
+	</div>
+</nav>
+		</header>
+			<script type="text/javascript">
+				PLUZZ.lazyLoadLight(
+						[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+						 	'http://static-pluzz.francetv.fr/js/underscore.js',
+							'http://static.francetv.fr/js/audience-min.js',
+							'http://static-pluzz.francetv.fr/js/fancybox/jquery.fancybox-1.3.4.js',
+							'http://static-pluzz.francetv.fr/js/jquery.columnizer.js',
+							'http://static-pluzz.francetv.fr/js/jquery.hoverIntent.minified.js',
+							'http://static-pluzz.francetv.fr/js/jquery.autocomplete-min.js',
+							'http://static-pluzz.francetv.fr/js/jquery.pluzzAutoComplete.js',
+							'http://static-pluzz.francetv.fr/js/jquery.placeholder.min.js',
+							'https://sso.francetv.fr/sso.js',
+							'http://cdn.echoenabled.com/clientapps/v2/backplane.js',
+							'https://user.francetv.fr/cdn/javascripts/capture_client.js',
+							'http://static-pluzz.francetv.fr/js/Capture.js',
+							'http://static-pluzz.francetv.fr/js/main.js'], 
+						function() {
+							JANRAIN.SSO.CAPTURE.check_login({
+								sso_server: 'https://sso.francetv.fr',
+							    client_id: 'mj6f5p3xdzbp5azf2gm3x2m3cdjkk3fb',
+							    redirect_uri: 'http://pluzz.francetv.fr/login/',
+							    logout_uri: 'http://pluzz.francetv.fr/login/logout',
+							    xd_receiver: 'http://pluzz.francetv.fr/xdcomm.html'
+							});
+							init_main();
+							PLUZZ.lazyLoadLight([	'http://static.francetv.fr/js/jquery.metanav-min.js' ], function() {} );
+							PLUZZ.lazyLoadLight([	'//connect.facebook.net/fr_FR/all.js' ], function() {} );
+						});
+			</script>
+			<section id="content">
+						
+<section id="page">
+	<section class="hm-guide pub metro">
+		<div xtcz="En_direct">
+	<article class="hm-direct">
+		<span>
+			<h2 class="box-title">En direct</h2>
+		</span>
+		<span id="hm-voir-programme"><a class="hm-replay-guide" href="http://programme-tv.francetv.fr/" target="_blank">Voir le programme TV</a></span>
+		<ul class="hm-direct-liste">
+		<li class="france2">
+	<a class="link-now" href="http://pluzz.francetv.fr/france2">
+		<img class="vign-now" src="http://pluzz.francetv.fr/staticftv/ref_emissions/2012-10-29/COL_375101_csa1_214.jpg" alt="Aller sur la page Seriez-vous un bon expert ?"/>
+		<span class="play-button"></span>
+		<div class="timeline">
+			<div class="progress" data-start="1351527000" data-end="1351529100">
+				<span class="masque">Programme en cours de diffusion</span>
+				<div class="tooltip"><span class="text"></span></div>
+			</div>
+		</div>
+		
+		<span class="start">17:10 | </span>
+		<span class="end">17:45</span>
+		
+		<span class="title" data-title="Seriez-vous un bon expert ?">Seriez-vous un bon expert ?</span>
+	</a>
+	<a href="http://pluzz.francetv.fr/ajax/ibmoment/chaine/france2" class="i"></a>
+</li><li class="france3">
+	<a class="link-now" href="http://pluzz.francetv.fr/france3">
+		<img class="vign-now" src="http://pluzz.francetv.fr/staticftv/ref_emissions/2012-10-29/COL_382346_csa1_214.jpg" alt="Aller sur la page Slam"/>
+		<span class="play-button"></span>
+		<div class="timeline">
+			<div class="progress" data-start="1351528200" data-end="1351530600">
+				<span class="masque">Programme en cours de diffusion</span>
+				<div class="tooltip"><span class="text"></span></div>
+			</div>
+		</div>
+		
+		<span class="start">17:30 | </span>
+		<span class="end">18:10</span>
+		
+		<span class="title" data-title="Slam">Slam</span>
+	</a>
+	<a href="http://pluzz.francetv.fr/ajax/ibmoment/chaine/france3" class="i"></a>
+</li><li class="france4">
+	<a class="link-now" href="http://pluzz.francetv.fr/france4">
+		<img class="vign-now" src="http://pluzz.francetv.fr/staticftv/ref_emissions/2012-10-29/EMI_71693_csa1_214.jpg" alt="Aller sur la page Urgences"/>
+		<span class="play-button"></span>
+		<div class="timeline">
+			<div class="progress" data-start="1351526400" data-end="1351529100">
+				<span class="masque">Programme en cours de diffusion</span>
+				<div class="tooltip"><span class="text"></span></div>
+			</div>
+		</div>
+		
+		<span class="start">17:00 | </span>
+		<span class="end">17:45</span>
+		
+		<span class="title" data-title="Urgences">Urgences</span>
+	</a>
+	<a href="http://pluzz.francetv.fr/ajax/ibmoment/chaine/france4" class="i"></a>
+</li><li class="france5">
+	<a class="link-now" href="http://pluzz.francetv.fr/france5">
+		<img class="vign-now" src="http://pluzz.francetv.fr/staticftv/ref_emissions/2012-10-29/COL_369331_csa1_214.jpg" alt="Aller sur la page C à dire ?!"/>
+		<span class="play-button"></span>
+		<div class="timeline">
+			<div class="progress" data-start="1351528200" data-end="1351529040">
+				<span class="masque">Programme en cours de diffusion</span>
+				<div class="tooltip"><span class="text"></span></div>
+			</div>
+		</div>
+		
+		<span class="start">17:30 | </span>
+		<span class="end">17:44</span>
+		
+		<span class="title" data-title="C à dire ?!">C à dire ?!</span>
+	</a>
+	<a href="http://pluzz.francetv.fr/ajax/ibmoment/chaine/france5" class="i"></a>
+</li><li class="franceo">
+	<a class="link-now" href="http://pluzz.francetv.fr/franceo">
+		<img class="vign-now" src="http://pluzz.francetv.fr/staticftv/ref_emissions/2012-10-29/COL_341885_csa1_214.jpg" alt="Aller sur la page Foot 2 rue"/>
+		<span class="play-button"></span>
+		<div class="timeline">
+			<div class="progress" data-start="1351527300" data-end="1351528800">
+				<span class="masque">Programme en cours de diffusion</span>
+				<div class="tooltip"><span class="text"></span></div>
+			</div>
+		</div>
+		
+		<span class="start">17:15 | </span>
+		<span class="end">17:40</span>
+		
+		<span class="title" data-title="Foot 2 rue">Foot 2 rue</span>
+	</a>
+	<a href="http://pluzz.francetv.fr/ajax/ibmoment/chaine/franceo" class="i"></a>
+</li>		</ul>
+	</article>
+</div>
+<script type="text/javascript">
+	PLUZZ.lazyLoadLight(
+		[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+		 	'http://static-pluzz.francetv.fr/js/underscore.js',
+		 	'http://static-pluzz.francetv.fr/js/onareavisible.js'], 
+		function() {
+			window.onAreaVisible(
+					$('#page').find('.hm-direct'),
+					function() {
+						PLUZZ.lazyLoadLight(
+								[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+								 	'http://static-pluzz.francetv.fr/js/jquery.autoellipsis-1.0.3.min.js',
+								 	'http://static-pluzz.francetv.fr/js/moment.js'], 
+								function() {
+									init_moment();
+								});
+					},
+					100
+				);
+		});
+</script>		<div xtcz="Replay">
+	<article class="hm-replay">
+		<h2 class="box-title">En Replay</h2>	
+		<nav class="replay-nav">
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-22T06:00/end/2012-10-23T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-22T06:00/end/2012-10-23T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Lundi 22</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-23T06:00/end/2012-10-24T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-23T06:00/end/2012-10-24T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Mardi 23</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-24T06:00/end/2012-10-25T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-24T06:00/end/2012-10-25T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Mercredi 24</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-25T06:00/end/2012-10-26T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-25T06:00/end/2012-10-26T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Jeudi 25</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-26T06:00/end/2012-10-27T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-26T06:00/end/2012-10-27T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Vendredi 26</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-27T06:00/end/2012-10-28T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-27T06:00/end/2012-10-28T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Samedi 27</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-28T06:00/end/2012-10-29T05:59/small/true/metro/true" class="sel" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-28T06:00/end/2012-10-29T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Hier</a></div>
+					<div class="replay-nav-entry"><a href="/ajax/getepg/start/2012-10-29T06:00/end/2012-10-30T05:59/small/true/metro/true" onclick='selectMe(this);$.get("/ajax/getepg/start/2012-10-29T06:00/end/2012-10-30T05:59/small/true/metro/true", {}, function(data, textStatus) { $(".hm-replay-liste").html(data); replay(); }, "html");return false;'>Aujourd'hui</a></div>
+				</nav>
+		<script type="text/javascript">
+			var small = true;
+		</script>
+		<div class="hm-replay-liste replay-liste-small">
+			<div class="wrapper-epg">
+	<span class="logo_epg epg_france2"><span class="masque">Programme de la chaine france2</span></span>
+	<div class="prog-chaine france2">
+		<ul>
+			<li data-prog="the_ou_cafe" data-date="2012-10-28T07:00">
+					<a href="http://pluzz.francetv.fr/videos/the_ou_cafe_,71744167.html">
+								<span class="infos-epg">
+					<span class="start">07:00</span>
+					<span class="title">Thé ou café</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/the_ou_cafe/date/2012-10-28T07:00" class="i"></a>
+			</li>
+	<li data-prog="sagesses_bouddhistes" data-date="2012-10-28T08:30">
+					<a href="http://pluzz.francetv.fr/videos/sagesses_bouddhistes_,71744169.html">
+								<span class="infos-epg">
+					<span class="start">08:30</span>
+					<span class="title">Sagesses bouddhistes</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/sagesses_bouddhistes/date/2012-10-28T08:30" class="i"></a>
+			</li>
+	<li data-prog="islam" data-date="2012-10-28T08:45">
+					<a href="http://pluzz.francetv.fr/videos/islam_,71744170.html">
+								<span class="infos-epg">
+					<span class="start">08:45</span>
+					<span class="title">Islam</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/islam/date/2012-10-28T08:45" class="i"></a>
+			</li>
+	<li data-prog="judaica" data-date="2012-10-28T09:15">
+					<a href="http://pluzz.francetv.fr/videos/judaica_,71744171.html">
+								<span class="infos-epg">
+					<span class="start">09:15</span>
+					<span class="title">Judaïca</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/judaica/date/2012-10-28T09:15" class="i"></a>
+			</li>
+	<li data-prog="source_de_vie" data-date="2012-10-28T09:30">
+					<a href="http://pluzz.francetv.fr/videos/source_de_vie_,71744172.html">
+								<span class="infos-epg">
+					<span class="start">09:30</span>
+					<span class="title">Source de vie</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/source_de_vie/date/2012-10-28T09:30" class="i"></a>
+			</li>
+	<li data-prog="presence_protestante" data-date="2012-10-28T10:00">
+					<a href="http://pluzz.francetv.fr/videos/presence_protestante_,71744173.html">
+								<span class="infos-epg">
+					<span class="start">10:00</span>
+					<span class="title">Présence protestante</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/presence_protestante/date/2012-10-28T10:00" class="i"></a>
+			</li>
+	<li data-prog="le_jour_du_seigneur" data-date="2012-10-28T10:45">
+					<a href="http://pluzz.francetv.fr/videos/le_jour_du_seigneur_,71744174.html">
+								<span class="infos-epg">
+					<span class="start">10:45</span>
+					<span class="title">Le jour du Seigneur</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/le_jour_du_seigneur/date/2012-10-28T10:45" class="i"></a>
+			</li>
+	<li data-prog="tout_le_monde_veut_prendre_sa_place" data-date="2012-10-28T12:05">
+					<a href="http://pluzz.francetv.fr/videos/tout_le_monde_veut_prendre_sa_place_,71744175.html">
+								<span class="infos-epg">
+					<span class="start">12:05</span>
+					<span class="title">Tout le monde veut prendre sa place</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/tout_le_monde_veut_prendre_sa_place/date/2012-10-28T12:05" class="i"></a>
+			</li>
+	<li data-prog="paris_en_plus_grand" data-date="2012-10-28T12:55">
+					<a href="http://pluzz.francetv.fr/videos/paris_en_plus_grand_,71744176.html">
+								<span class="infos-epg">
+					<span class="start">12:55</span>
+					<span class="title">Paris en plus grand</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/paris_en_plus_grand/date/2012-10-28T12:55" class="i"></a>
+			</li>
+	<li data-prog="jt_13h" data-date="2012-10-28T13:00">
+					<a href="http://pluzz.francetv.fr/videos/jt_13h_,71744177.html">
+								<span class="infos-epg">
+					<span class="start">13:00</span>
+					<span class="title">Journal</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/jt_13h/date/2012-10-28T13:00" class="i"></a>
+			</li>
+	<li data-prog="13h15_le_dimanche" data-date="2012-10-28T13:20">
+					<a href="http://pluzz.francetv.fr/videos/13h15_le_dimanche_,71744178.html">
+								<span class="infos-epg">
+					<span class="start">13:20</span>
+					<span class="title">13h15, le dimanche...</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/13h15_le_dimanche/date/2012-10-28T13:20" class="i"></a>
+			</li>
+	<li data-prog="meteo_jt_13h" data-date="2012-10-28T14:05">
+					<a href="http://pluzz.francetv.fr/videos/meteo_jt_13h_,71744179.html">
+								<span class="infos-epg">
+					<span class="start">14:05</span>
+					<span class="title">Météo 2</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/meteo_jt_13h/date/2012-10-28T14:05" class="i"></a>
+			</li>
+	<li data-prog="grandeurs_nature" data-date="2012-10-28T16:25">
+					<a href="http://pluzz.francetv.fr/videos/grandeurs_nature_,71744181.html">
+								<span class="infos-epg">
+					<span class="start">16:25</span>
+					<span class="title">Grandeurs nature</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/grandeurs_nature/date/2012-10-28T16:25" class="i"></a>
+			</li>
+	<li data-prog="stade_2" data-date="2012-10-28T17:30">
+					<a href="http://pluzz.francetv.fr/videos/stade_2_,71744182.html">
+								<span class="infos-epg">
+					<span class="start">17:30</span>
+					<span class="title">Stade 2</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/stade_2/date/2012-10-28T17:30" class="i"></a>
+			</li>
+	<li data-prog="point_route" data-date="2012-10-28T18:45">
+					<a href="http://pluzz.francetv.fr/videos/point_route_,71744183.html">
+								<span class="infos-epg">
+					<span class="start">18:45</span>
+					<span class="title">Point route</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/point_route/date/2012-10-28T18:45" class="i"></a>
+			</li>
+	<li data-prog="vivement_dimanche_prochain" data-date="2012-10-28T18:50">
+					<a href="http://pluzz.francetv.fr/videos/vivement_dimanche_prochain_,71744184.html">
+								<span class="infos-epg">
+					<span class="start">18:50</span>
+					<span class="title">Vivement dimanche prochain</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/vivement_dimanche_prochain/date/2012-10-28T18:50" class="i"></a>
+			</li>
+	<li data-prog="jt20h" data-date="2012-10-28T20:00">
+					<a href="http://pluzz.francetv.fr/videos/jt20h_,71744185.html">
+								<span class="infos-epg">
+					<span class="start">20:00</span>
+					<span class="title">Journal</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/jt20h/date/2012-10-28T20:00" class="i"></a>
+			</li>
+	<li data-prog="20h30_le_dimanche" data-date="2012-10-28T20:30">
+					<a href="http://pluzz.francetv.fr/videos/20h30_le_dimanche_,71744186.html">
+								<span class="infos-epg">
+					<span class="start">20:30</span>
+					<span class="title">20h30 le dimanche</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/20h30_le_dimanche/date/2012-10-28T20:30" class="i"></a>
+			</li>
+	<li data-prog="emission_de_solutions" data-date="2012-10-28T20:40">
+					<a href="http://pluzz.francetv.fr/videos/emission_de_solutions_,71744187.html">
+								<span class="infos-epg">
+					<span class="start">20:40</span>
+					<span class="title">Emission de solutions</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/emission_de_solutions/date/2012-10-28T20:40" class="i"></a>
+			</li>
+	<li data-prog="meteo_jt20h" data-date="2012-10-28T20:41">
+					<a href="http://pluzz.francetv.fr/videos/meteo_jt20h_,71744188.html">
+								<span class="infos-epg">
+					<span class="start">20:41</span>
+					<span class="title">Météo 2</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/meteo_jt20h/date/2012-10-28T20:41" class="i"></a>
+			</li>
+	<li data-prog="faites_entrer_l_accuse" data-date="2012-10-28T22:10">
+					<a href="http://pluzz.francetv.fr/videos/faites_entrer_l_accuse_,71738329.html">
+								<span class="infos-epg">
+					<span class="start">22:10</span>
+					<span class="title">Faites entrer l'accusé</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/faites_entrer_l_accuse/date/2012-10-28T22:10" class="i"></a>
+			</li>
+	<li data-prog="c_france_f2" data-date="2012-10-28T23:45">
+					<a href="http://pluzz.francetv.fr/videos/c_france_f2_,71744189.html">
+								<span class="infos-epg">
+					<span class="start">23:45</span>
+					<span class="title">(c) France</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/c_france_f2/date/2012-10-28T23:45" class="i"></a>
+			</li>
+		</ul>
+	</div>
+	<div class="degrade-epg"></div>
+</div>
+<div class="wrapper-epg">
+	<span class="logo_epg epg_france3"><span class="masque">Programme de la chaine france3</span></span>
+	<div class="prog-chaine france3">
+		<ul>
+			<li data-prog="mandarine_cow" data-date="2012-10-28T07:10">
+					<a href="http://pluzz.francetv.fr/videos/mandarine_cow_,71741019.html">
+								<span class="infos-epg">
+					<span class="start">07:10</span>
+					<span class="title">Mandarine & Cow</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/mandarine_cow/date/2012-10-28T07:10" class="i"></a>
+			</li>
+	<li data-prog="oggy_et_les_cafards" data-date="2012-10-28T07:20">
+					<a href="http://pluzz.francetv.fr/videos/oggy_et_les_cafards_saison2_ep49_,71741020.html">
+								<span class="infos-epg">
+					<span class="start">07:20</span>
+					<span class="title">Oggy et les cafards</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/oggy_et_les_cafards/date/2012-10-28T07:20" class="i"></a>
+			</li>
+	<li data-prog="oggy_et_les_cafards" data-date="2012-10-28T07:25">
+					<a href="http://pluzz.francetv.fr/videos/oggy_et_les_cafards_saison2_ep50_,71741021.html">
+								<span class="infos-epg">
+					<span class="start">07:25</span>
+					<span class="title">Oggy et les cafards</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/oggy_et_les_cafards/date/2012-10-28T07:25" class="i"></a>
+			</li>
+	<li data-prog="oggy_et_les_cafards" data-date="2012-10-28T07:30">
+					<a href="http://pluzz.francetv.fr/videos/oggy_et_les_cafards_saison2_ep51_,72695987.html">
+								<span class="infos-epg">
+					<span class="start">07:30</span>
+					<span class="title">Oggy et les cafards</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/oggy_et_les_cafards/date/2012-10-28T07:30" class="i"></a>
+			</li>
+	<li data-prog="les_dalton" data-date="2012-10-28T07:45">
+					<a href="http://pluzz.francetv.fr/videos/les_dalton_saison1_,71741022.html">
+								<span class="infos-epg">
+					<span class="start">07:45</span>
+					<span class="title">Les Dalton</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_dalton/date/2012-10-28T07:45" class="i"></a>
+			</li>
+	<li data-prog="chaplin_co" data-date="2012-10-28T08:20">
+					<a href="http://pluzz.francetv.fr/videos/chaplin_co_ep23_,71741025.html">
+								<span class="infos-epg">
+					<span class="start">08:20</span>
+					<span class="title">Chaplin & Co</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/chaplin_co/date/2012-10-28T08:20" class="i"></a>
+			</li>
+	<li data-prog="chaplin_co" data-date="2012-10-28T08:25">
+					<a href="http://pluzz.francetv.fr/videos/chaplin_co_ep24_,71741026.html">
+								<span class="infos-epg">
+					<span class="start">08:25</span>
+					<span class="title">Chaplin & Co</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/chaplin_co/date/2012-10-28T08:25" class="i"></a>
+			</li>
+	<li data-prog="cote_jardin" data-date="2012-10-28T10:45">
+					<a href="http://pluzz.francetv.fr/videos/cote_jardin_,71741030.html">
+								<span class="infos-epg">
+					<span class="start">10:45</span>
+					<span class="title">Côté jardin</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/cote_jardin/date/2012-10-28T10:45" class="i"></a>
+			</li>
+	<li data-prog="expression_directe_f3" data-date="2012-10-28T11:15">
+					<a href="http://pluzz.francetv.fr/videos/expression_directe_f3_,71741031.html">
+								<span class="infos-epg">
+					<span class="start">11:15</span>
+					<span class="title">Expression directe</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/expression_directe_f3/date/2012-10-28T11:15" class="i"></a>
+			</li>
+	<li data-prog="meteo_jt_1213" data-date="2012-10-28T11:25">
+					<a href="http://pluzz.francetv.fr/videos/meteo_jt_1213_,71741032.html">
+								<span class="infos-epg">
+					<span class="start">11:25</span>
+					<span class="title">Météo</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/meteo_jt_1213/date/2012-10-28T11:25" class="i"></a>
+			</li>
+	<li data-prog="12_13_dimanche" data-date="2012-10-28T12:10">
+					<a href="http://pluzz.francetv.fr/videos/12_13_dimanche_,71223076.html">
+								<span class="infos-epg">
+					<span class="start">12:10</span>
+					<span class="title">12/13 dimanche</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/12_13_dimanche/date/2012-10-28T12:10" class="i"></a>
+			</li>
+	<li data-prog="30_millions_d_amis" data-date="2012-10-28T12:50">
+					<a href="http://pluzz.francetv.fr/videos/30_millions_d_amis_,71741033.html">
+								<span class="infos-epg">
+					<span class="start">12:50</span>
+					<span class="title">30 millions d'amis</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/30_millions_d_amis/date/2012-10-28T12:50" class="i"></a>
+			</li>
+	<li data-prog="en_course_sur_france_3" data-date="2012-10-28T15:00">
+					<a href="http://pluzz.francetv.fr/videos/en_course_sur_france_3_,71741036.html">
+								<span class="infos-epg">
+					<span class="start">15:00</span>
+					<span class="title">En course sur France 3</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/en_course_sur_france_3/date/2012-10-28T15:00" class="i"></a>
+			</li>
+	<li data-prog="chabada" data-date="2012-10-28T17:00">
+					<a href="http://pluzz.francetv.fr/videos/chabada_,71741038.html">
+								<span class="infos-epg">
+					<span class="start">17:00</span>
+					<span class="title">Chabada</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/chabada/date/2012-10-28T17:00" class="i"></a>
+			</li>
+	<li data-prog="question_pour_un_super_champion" data-date="2012-10-28T17:55">
+					<a href="http://pluzz.francetv.fr/videos/question_pour_un_super_champion_,71741039.html">
+								<span class="infos-epg">
+					<span class="start">17:55</span>
+					<span class="title">Questions pour un super champion</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/question_pour_un_super_champion/date/2012-10-28T17:55" class="i"></a>
+			</li>
+	<li data-prog="jt_1920" data-date="2012-10-28T19:30">
+					<a href="http://pluzz.francetv.fr/videos/jt_1920_,71223078.html">
+								<span class="infos-epg">
+					<span class="start">19:30</span>
+					<span class="title">19/20 : Journal national</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/jt_1920/date/2012-10-28T19:30" class="i"></a>
+			</li>
+	<li data-prog="meteo_jt_1920" data-date="2012-10-28T19:58">
+					<a href="http://pluzz.francetv.fr/videos/meteo_jt_1920_,71741040.html">
+								<span class="infos-epg">
+					<span class="start">19:58</span>
+					<span class="title">Météo</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/meteo_jt_1920/date/2012-10-28T19:58" class="i"></a>
+			</li>
+	<li data-prog="tout_le_sport" data-date="2012-10-28T20:00">
+					<a href="http://pluzz.francetv.fr/videos/tout_le_sport_,71741041.html">
+								<span class="infos-epg">
+					<span class="start">20:00</span>
+					<span class="title">Tout le sport</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/tout_le_sport/date/2012-10-28T20:00" class="i"></a>
+			</li>
+	<li data-prog="les_enquetes_de_murdoch" data-date="2012-10-28T20:45">
+					<a href="http://pluzz.francetv.fr/videos/les_enquetes_de_murdoch_saison5_ep4_,71738283.html">
+								<span class="infos-epg">
+					<span class="start">20:45</span>
+					<span class="title">Les enquêtes de Murdoch</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_enquetes_de_murdoch/date/2012-10-28T20:45" class="i"></a>
+			</li>
+	<li data-prog="les_enquetes_de_murdoch" data-date="2012-10-28T21:30">
+					<a href="http://pluzz.francetv.fr/videos/les_enquetes_de_murdoch_saison5_ep5_,71738284.html">
+								<span class="infos-epg">
+					<span class="start">21:30</span>
+					<span class="title">Les enquêtes de Murdoch</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_enquetes_de_murdoch/date/2012-10-28T21:30" class="i"></a>
+			</li>
+	<li data-prog="les_enquetes_de_murdoch" data-date="2012-10-28T22:15">
+					<a href="http://pluzz.francetv.fr/videos/les_enquetes_de_murdoch_saison2_ep10_,71738285.html">
+								<span class="infos-epg">
+					<span class="start">22:15</span>
+					<span class="title">Les enquêtes de Murdoch</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_enquetes_de_murdoch/date/2012-10-28T22:15" class="i"></a>
+			</li>
+	<li data-prog="soir_3" data-date="2012-10-28T23:10">
+					<a href="http://pluzz.francetv.fr/videos/soir_3_,71223079.html">
+								<span class="infos-epg">
+					<span class="start">23:10</span>
+					<span class="title">Soir 3</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/soir_3/date/2012-10-28T23:10" class="i"></a>
+			</li>
+		</ul>
+	</div>
+	<div class="degrade-epg"></div>
+</div>
+<div class="wrapper-epg">
+	<span class="logo_epg epg_france4"><span class="masque">Programme de la chaine france4</span></span>
+	<div class="prog-chaine france4">
+		<ul>
+				</ul>
+	</div>
+	<div class="degrade-epg"></div>
+</div>
+<div class="wrapper-epg">
+	<span class="logo_epg epg_france5"><span class="masque">Programme de la chaine france5</span></span>
+	<div class="prog-chaine france5">
+		<ul>
+			<li data-prog="la_galerie_france_5" data-date="2012-10-28T08:45">
+					<a href="http://pluzz.francetv.fr/videos/la_galerie_france_5_,71521582.html">
+								<span class="infos-epg">
+					<span class="start">08:45</span>
+					<span class="title">La galerie France 5</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/la_galerie_france_5/date/2012-10-28T08:45" class="i"></a>
+			</li>
+	<li data-prog="les_escapades_de_petitrenaud" data-date="2012-10-28T12:00">
+					<a href="http://pluzz.francetv.fr/videos/les_escapades_de_petitrenaud_,71521584.html">
+								<span class="infos-epg">
+					<span class="start">12:00</span>
+					<span class="title">Les escapades de Petitrenaud</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_escapades_de_petitrenaud/date/2012-10-28T12:00" class="i"></a>
+			</li>
+	<li data-prog="medias_le_mag" data-date="2012-10-28T12:35">
+					<a href="http://pluzz.francetv.fr/videos/medias_le_mag_,71521585.html">
+								<span class="infos-epg">
+					<span class="start">12:35</span>
+					<span class="title">Médias, le magazine</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/medias_le_mag/date/2012-10-28T12:35" class="i"></a>
+			</li>
+	<li data-prog="superstructures_sos" data-date="2012-10-28T13:40">
+					<a href="http://pluzz.francetv.fr/videos/superstructures_sos_,71631129.html">
+								<span class="infos-epg">
+					<span class="start">13:40</span>
+					<span class="title">Superstructures SOS</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/superstructures_sos/date/2012-10-28T13:40" class="i"></a>
+			</li>
+	<li data-prog="les_routes_de_l_impossible" data-date="2012-10-28T14:50">
+					<a href="http://pluzz.francetv.fr/videos/les_routes_de_l_impossible_,71631130.html">
+								<span class="infos-epg">
+					<span class="start">14:50</span>
+					<span class="title">Les routes de l'impossible</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_routes_de_l_impossible/date/2012-10-28T14:50" class="i"></a>
+			</li>
+	<li data-prog="et_si_on_changeait_le_monde_f5" data-date="2012-10-28T17:46">
+					<a href="http://pluzz.francetv.fr/videos/et_si_on_changeait_le_monde_f5_,71521587.html">
+								<span class="infos-epg">
+					<span class="start">17:46</span>
+					<span class="title">Et si on changeait le monde</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/et_si_on_changeait_le_monde_f5/date/2012-10-28T17:46" class="i"></a>
+			</li>
+	<li data-prog="c_politique" data-date="2012-10-28T17:50">
+					<a href="http://pluzz.francetv.fr/videos/c_politique_,71521588.html">
+								<span class="infos-epg">
+					<span class="start">17:50</span>
+					<span class="title">C politique</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/c_politique/date/2012-10-28T17:50" class="i"></a>
+			</li>
+	<li data-prog="on_n_est_pas_que_des_cobayes" data-date="2012-10-28T19:05">
+					<a href="http://pluzz.francetv.fr/videos/on_n_est_pas_que_des_cobayes_,71521589.html">
+								<span class="infos-epg">
+					<span class="start">19:05</span>
+					<span class="title">On n'est pas que des cobayes !</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/on_n_est_pas_que_des_cobayes/date/2012-10-28T19:05" class="i"></a>
+			</li>
+	<li data-prog="le_vinvinteur" data-date="2012-10-28T19:55">
+					<a href="http://pluzz.francetv.fr/videos/le_vinvinteur_,71521590.html">
+								<span class="infos-epg">
+					<span class="start">19:55</span>
+					<span class="title">Le vinvinteur</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/le_vinvinteur/date/2012-10-28T19:55" class="i"></a>
+			</li>
+	<li data-prog="avis_de_sorties__france_5" data-date="2012-10-28T20:25">
+					<a href="http://pluzz.francetv.fr/videos/avis_de_sorties__france_5_,71521591.html">
+								<span class="infos-epg">
+					<span class="start">20:25</span>
+					<span class="title">Avis de sorties</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/avis_de_sorties__france_5/date/2012-10-28T20:25" class="i"></a>
+			</li>
+	<li data-prog="emission_de_solutions_f5" data-date="2012-10-28T20:33">
+					<a href="http://pluzz.francetv.fr/videos/emission_de_solutions_f5_,71521592.html">
+								<span class="infos-epg">
+					<span class="start">20:33</span>
+					<span class="title">Emission de solutions</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/emission_de_solutions_f5/date/2012-10-28T20:33" class="i"></a>
+			</li>
+	<li data-prog="restauration_francaise" data-date="2012-10-28T20:35">
+					<a href="http://pluzz.francetv.fr/videos/restauration_francaise_,71631832.html">
+								<span class="infos-epg">
+					<span class="start">20:35</span>
+					<span class="title">Restauration française, un  pavé dans l'assiette</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/restauration_francaise/date/2012-10-28T20:35" class="i"></a>
+			</li>
+		</ul>
+	</div>
+	<div class="degrade-epg"></div>
+</div>
+<div class="wrapper-epg">
+	<span class="logo_epg epg_franceo"><span class="masque">Programme de la chaine franceo</span></span>
+	<div class="prog-chaine franceo">
+		<ul>
+			<li data-prog="h2o_s3" data-date="2012-10-28T10:10">
+					<a href="http://pluzz.francetv.fr/videos/h2o_s3_saison3_ep23_,71579172.html">
+								<span class="infos-epg">
+					<span class="start">10:10</span>
+					<span class="title">H2O</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/h2o_s3/date/2012-10-28T10:10" class="i"></a>
+			</li>
+	<li data-prog="h2o_s3" data-date="2012-10-28T10:35">
+					<a href="http://pluzz.francetv.fr/videos/h2o_s3_saison3_ep24_,71579173.html">
+								<span class="infos-epg">
+					<span class="start">10:35</span>
+					<span class="title">H2O</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/h2o_s3/date/2012-10-28T10:35" class="i"></a>
+			</li>
+	<li data-prog="tropismes" data-date="2012-10-28T11:00">
+					<a href="http://pluzz.francetv.fr/videos/tropismes_,71579174.html">
+								<span class="infos-epg">
+					<span class="start">11:00</span>
+					<span class="title">Tropismes</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/tropismes/date/2012-10-28T11:00" class="i"></a>
+			</li>
+	<li data-prog="les_petits_plats_de_babette" data-date="2012-10-28T11:30">
+					<a href="http://pluzz.francetv.fr/videos/les_petits_plats_de_babette_,71579175.html">
+								<span class="infos-epg">
+					<span class="start">11:30</span>
+					<span class="title">Les p'tits plats de Babette</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/les_petits_plats_de_babette/date/2012-10-28T11:30" class="i"></a>
+			</li>
+	<li data-prog="le_monde_vu_par" data-date="2012-10-28T12:00">
+					<a href="http://pluzz.francetv.fr/videos/le_monde_vu_par_,71579176.html">
+								<span class="infos-epg">
+					<span class="start">12:00</span>
+					<span class="title">Le monde vu par...</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/le_monde_vu_par/date/2012-10-28T12:00" class="i"></a>
+			</li>
+	<li data-prog="riding_zone" data-date="2012-10-28T17:40">
+					<a href="http://pluzz.francetv.fr/videos/riding_zone_,71579187.html">
+								<span class="infos-epg">
+					<span class="start">17:40</span>
+					<span class="title">Riding Zone</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/riding_zone/date/2012-10-28T17:40" class="i"></a>
+			</li>
+	<li data-prog="street_chef" data-date="2012-10-28T19:00">
+					<a href="http://pluzz.francetv.fr/videos/street_chef_,72698354.html">
+								<span class="infos-epg">
+					<span class="start">19:00</span>
+					<span class="title">Street Chef</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/street_chef/date/2012-10-28T19:00" class="i"></a>
+			</li>
+	<li data-prog="info_soir" data-date="2012-10-28T19:40">
+					<a href="http://pluzz.francetv.fr/videos/info_soir_,71579189.html">
+								<span class="infos-epg">
+					<span class="start">19:40</span>
+					<span class="title">Infô soir</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/info_soir/date/2012-10-28T19:40" class="i"></a>
+			</li>
+	<li data-prog="o_feminin" data-date="2012-10-28T19:50">
+					<a href="http://pluzz.francetv.fr/videos/o_feminin_,71579190.html">
+								<span class="infos-epg">
+					<span class="start">19:50</span>
+					<span class="title">Ô féminin</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/o_feminin/date/2012-10-28T19:50" class="i"></a>
+			</li>
+	<li data-prog="plus_belle_la_vie_fo" data-date="2012-10-28T20:45">
+					<a href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_fo_saison2_ep296_,71579191.html">
+								<span class="infos-epg">
+					<span class="start">20:45</span>
+					<span class="title">Plus belle la vie, la collec'</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/plus_belle_la_vie_fo/date/2012-10-28T20:45" class="i"></a>
+			</li>
+	<li data-prog="plus_belle_la_vie_fo" data-date="2012-10-28T21:10">
+					<a href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_fo_saison2_ep297_,71579192.html">
+								<span class="infos-epg">
+					<span class="start">21:10</span>
+					<span class="title">Plus belle la vie, la collec'</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/plus_belle_la_vie_fo/date/2012-10-28T21:10" class="i"></a>
+			</li>
+	<li data-prog="plus_belle_la_vie_fo" data-date="2012-10-28T21:40">
+					<a href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_fo_saison2_ep298_,71579193.html">
+								<span class="infos-epg">
+					<span class="start">21:40</span>
+					<span class="title">Plus belle la vie, la collec'</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/plus_belle_la_vie_fo/date/2012-10-28T21:40" class="i"></a>
+			</li>
+	<li data-prog="plus_belle_la_vie_fo" data-date="2012-10-28T22:20">
+					<a href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_fo_saison2_ep300_,71579195.html">
+								<span class="infos-epg">
+					<span class="start">22:20</span>
+					<span class="title">Plus belle la vie, la collec'</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/plus_belle_la_vie_fo/date/2012-10-28T22:20" class="i"></a>
+			</li>
+	<li data-prog="le_lab_o" data-date="2012-10-28T22:35">
+					<a href="http://pluzz.francetv.fr/videos/le_lab_o_,71579196.html">
+								<span class="infos-epg">
+					<span class="start">22:35</span>
+					<span class="title">Le Lab.Ô</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/le_lab_o/date/2012-10-28T22:35" class="i"></a>
+			</li>
+	<li data-prog="info_afrique" data-date="2012-10-29T00:30">
+					<a href="http://pluzz.francetv.fr/videos/info_afrique_,71579198.html">
+								<span class="infos-epg">
+					<span class="start">00:30</span>
+					<span class="title">Infô-Afrique</span>
+				</span>
+				
+			</a>
+			<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/info_afrique/date/2012-10-29T00:30" class="i"></a>
+			</li>
+		</ul>
+	</div>
+	<div class="degrade-epg"></div>
+</div>
+<div class="replay-load"><span id="spin-replay"></span></div>		</div>
+		<div class="hm-replay-guide"></div>
+	</article>
+</div>
+<script type="text/javascript">
+	PLUZZ.lazyLoadLight(
+		[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+		 	'http://static-pluzz.francetv.fr/js/underscore.js',
+		 	'http://static-pluzz.francetv.fr/js/onareavisible.js'], 
+		function() {
+			window.onAreaVisible(
+					$('#page').find('.hm-replay'),
+					function() {
+						PLUZZ.lazyLoadLight(
+							[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+							 	'http://static-pluzz.francetv.fr/js/jquery.mousewheel.js',
+							 	'http://static-pluzz.francetv.fr/js/mwheelIntent.js',
+							 	'http://static-pluzz.francetv.fr/js/jquery.jscrollpane.min.js',
+							 	'http://static-pluzz.francetv.fr/js/spin.min.js',
+							 	'http://static-pluzz.francetv.fr/js/replay.js'], 
+							function() {
+								init_replay();
+								if(typeof(publaunched)!="undefined") $(document).trigger('showpub');
+							});
+					},
+					100
+				);
+		});
+</script>	</section>
+	<div class="pub-pave" id="eShowPubMiddle" xtcz="Bloc_Pub_Accueil">
+	<div class="adCtnt"></div>
+</div><div id="div_incitation_sociale" style="display: none;" xtcz="Connexion_Facebook">
+	<p class="incitation"><span class="accroche">Partagez vos vidéos<br/>avec vos amis<br/>et découvrez leur<br/>sélection !</span></p>
+	<!--  //FIXME attention : classe css à remettre au propre -->
+	<label class="fbRegistrationRegisterButton uiButton uiButtonConfirm uiButtonLarge" id="fbRegistrationRegisterButtonPrefilled" for="fb_connect_button">
+		<input value="se connecter avec Facebook" type="submit" id="fb_connect_button" onclick="$('a.signin').trigger('click');">
+	</label>
+	<p class="explication">Et profitez d'une expérience<br/>enrichie sur francetv pluzz</p>
+	<div class="fb-facepile" data-max-rows="1" data-width="270" data-colorscheme="dark"></div>
+</div><div id="div_autopromo">
+	<a href=""><img src="http://pluzz.francetv.fr/staticftv/animation/img/1341246838.jpg" /></a>
+</div>
+	<script type="text/javascript">
+		PLUZZ.lazyLoadLight(
+			[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+			 	'http://static-pluzz.francetv.fr/js/jquery.autoellipsis-1.0.3.min.js',
+			 	'http://static-pluzz.francetv.fr/js/moment.js',
+			 	'http://static-pluzz.francetv.fr/js/jquery.mousewheel.js',
+			 	'http://static-pluzz.francetv.fr/js/mwheelIntent.js',
+			 	'http://static-pluzz.francetv.fr/js/jquery.jscrollpane.min.js',
+			 	'http://static-pluzz.francetv.fr/js/spin.min.js',
+			 	'http://static-pluzz.francetv.fr/js/replay.js',
+			 	'http://static-pluzz.francetv.fr/js/showpub.js'], 
+			function() {
+				init_showpub();
+			});
+	</script>
+	
+	<section class="hm-push">
+		<div xtcz="Les_plus_regardes">
+	<article class="hm-plusregardes">
+		<h2 class="box-title">Les + regardés</h2>
+				<div class="vignette-prog">
+			<a href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_saison9_ep2090_,71398880.html">
+				<img class="vignette-img" src="http://pluzz.francetv.fr/staticftv/ref_emissions/2012-10-26/EMI_382651_csa1_214.jpg" alt="Regarder Plus belle la vie" /> 
+				<span class="play-button"></span>
+				<!--<img class="logo-chaine" src="http://static-pluzz.francetv.fr/img/logos/france3.png" alt="France 3" />-->
+			</a>
+		</div>
+				<ol class="hm-plusregardes-liste">
+					<li class="first" data-prog="plus_belle_la_vie" data-date="2012-10-26T20:15">
+				<a class="lien-plusregardes" href="http://pluzz.francetv.fr/videos/plus_belle_la_vie_saison9_ep2090_,71398880.html">
+											<img class="logo-chaine" src="http://static-pluzz.francetv.fr/img/logos/france3.png" alt="France 3" />
+										<span class="title ellipsis">
+						Plus belle la vie					</span>
+					<span class="details">
+						<span class="nbAutresEpisodes">5 vidéos</span>
+											</span>
+				</a>
+				<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/plus_belle_la_vie/date/2012-10-26T20:15" class="i"></a>
+			</li>
+								<li  data-prog="castle_20h35" data-date="2012-10-22T20:45">
+				<a class="lien-plusregardes" href="http://pluzz.francetv.fr/videos/castle_20h35_saison4_ep8_,71400011.html">
+											<img class="logo-chaine" src="http://static-pluzz.francetv.fr/img/logos/france2.png" alt="France 2" />
+										<span class="title ellipsis">
+						Castle					</span>
+					<span class="details">
+						<span class="nbAutresEpisodes">1 vidéo</span>
+											</span>
+				</a>
+				<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/castle_20h35/date/2012-10-22T20:45" class="i"></a>
+			</li>
+								<li  data-prog="un_hiver_avec_les_sauveteurs_du_mon" data-date="2012-10-22T20:45">
+				<a class="lien-plusregardes" href="http://pluzz.francetv.fr/videos/un_hiver_avec_les_sauveteurs_du_mon_,71398728.html">
+											<img class="logo-chaine" src="http://static-pluzz.francetv.fr/img/logos/france3.png" alt="France 3" />
+										<span class="title ellipsis">
+						Un hiver avec les sauveteurs du Mont-Blanc					</span>
+					<span class="details">
+						<span class="nbAutresEpisodes">1 vidéo</span>
+											</span>
+				</a>
+				<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/un_hiver_avec_les_sauveteurs_du_mon/date/2012-10-22T20:45" class="i"></a>
+			</li>
+								<li  data-prog="mont_blanc_l_ete_meurtrier" data-date="2012-10-22T21:35">
+				<a class="lien-plusregardes" href="http://pluzz.francetv.fr/videos/mont_blanc_l_ete_meurtrier_,71398729.html">
+											<img class="logo-chaine" src="http://static-pluzz.francetv.fr/img/logos/france3.png" alt="France 3" />
+										<span class="title ellipsis">
+						Mont-Blanc : l'été meurtrier					</span>
+					<span class="details">
+						<span class="nbAutresEpisodes">1 vidéo</span>
+											</span>
+				</a>
+				<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/mont_blanc_l_ete_meurtrier/date/2012-10-22T21:35" class="i"></a>
+			</li>
+								<li  data-prog="on_nest_pas_couche" data-date="2012-10-27T23:00">
+				<a class="lien-plusregardes" href="http://pluzz.francetv.fr/videos/on_nest_pas_couche_,71738317.html">
+											<img class="logo-chaine" src="http://static-pluzz.francetv.fr/img/logos/france2.png" alt="France 2" />
+										<span class="title ellipsis">
+						On n'est pas couché					</span>
+					<span class="details">
+						<span class="nbAutresEpisodes">1 vidéo</span>
+											</span>
+				</a>
+				<a href="http://pluzz.francetv.fr/ajax/ibreplay/prog/on_nest_pas_couche/date/2012-10-27T23:00" class="i"></a>
+			</li>
+							</ol>
+	</article>
+</div>
+
+<script type="text/javascript">
+	PLUZZ.lazyLoadLight(
+		[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+		 	'http://static-pluzz.francetv.fr/js/underscore.js',
+		 	'http://static-pluzz.francetv.fr/js/onareavisible.js'], 
+		function() {
+			window.onAreaVisible(
+					$('#page').find('.hm-plusregardes'),
+					function() {
+						PLUZZ.lazyLoadLight(
+							[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+							 	'http://static-pluzz.francetv.fr/js/jquery.cookie.js', 
+							 	'http://static-pluzz.francetv.fr/js/plusregardes.js'], 
+							function() {
+								init_plusregardes();
+							});
+					},
+					100
+				);
+		});
+</script>		<article class="hm-onenparle">
+	<h2 class="box-title">On en parle</h2>
+	<div id="hm-onenparle"></div>
+	
+	<script type="text/javascript">
+		var oep_interval;
+		var oep_timeout;
+		PLUZZ.lazyLoadLight(
+			[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+			 	'http://static-pluzz.francetv.fr/js/underscore.js',
+			 	'http://static-pluzz.francetv.fr/js/onareavisible.js'], 
+			function() {
+				window.onAreaVisible(
+						$('#page').find('.hm-onenparle'),
+						function() {
+							PLUZZ.lazyLoadLight(
+								[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+								 	'http://static-pluzz.francetv.fr/js/jquery.mousewheel.js',
+								 	'http://static-pluzz.francetv.fr/js/mwheelIntent.js',
+								 	'http://static-pluzz.francetv.fr/js/jquery.jscrollpane.min.js',
+								 	'http://static-pluzz.francetv.fr/js/raphael.js',
+								 	'http://static-pluzz.francetv.fr/js/treemap-squared.js',
+								 	'http://static-pluzz.francetv.fr/js/jquery.cookie.js', 
+									'http://static-pluzz.francetv.fr/js/onenparle.js'], 
+								function() {
+									refreshOEP = function(){
+										MEANINGLY.FT.render('hm-onenparle');
+									};
+									//refresh 15min
+									window.clearInterval(oep_interval);
+									oep_interval = window.setInterval(refreshOEP, 3600000);
+									//refresh 00h02
+									var now = new Date();
+									var tom = new Date(now.getTime() + (1000*3600*24));
+									tom.setHours(0, 2, 0, 0);
+									toTom = +tom - now;
+									window.clearTimeout(oep_timeout);
+									oep_timeout = window.setTimeout(refreshOEP,toTom);
+									MEANINGLY.FT.render('hm-onenparle');
+									$('.hm-onenparle').on('click','.hm-onenparle a',function(){
+										$.cookie('x3',true,{path: '/'});
+									});
+								});
+						},
+						100
+					);
+			});
+	</script>
+</article>	</section>
+	
+	<div xtcz="On_vous_recommande">
+		<section class="hm-edito">
+			<section class="pe-edito">
+<h2 class="box-title">SUR PLUZZ VAD</h2>
+	<article><a href="http://pluzzvad.francetv.fr/serie/plus-belle-la-vie" target="_blank"><img src="http://pluzz.francetv.fr/staticftv/animation/img/1349945359.jpg" alt="Plus belle la vie" /></a></article><article><a href="http://pluzzvad.francetv.fr/videos/le-prenom_8219.html" target="_blank"><img src="http://pluzz.francetv.fr/staticftv/animation/img/1349945400.jpg" alt="Le prénom" /></a></article><article><a href="http://pluzzvad.francetv.fr/videos/sur-la-piste-du-marsupilami_8113.html" target="_blank"><img src="http://pluzz.francetv.fr/staticftv/animation/img/1348230682.jpg" alt="Sur la piste du Marsupilami" /></a></article></section>		</section>
+	</div>
+</section>			</section>
+			<div xtcz="Footer">
+	<footer id="footer">
+		<section id="footer-content">
+			<article id="footer-savoir">
+				<h2>Tout savoir sur francetvpluzz.fr</h2>
+				<a href="http://pluzz.francetv.fr/aide.html" title="Besoin d’aide ? C’est par ici !" data-xitiClickTags=',Footer::Tout_savoir_Pluzz::Aide,N'>Aide</a>
+				<a href="http://pluzz.francetv.fr/accessibilite.html" title="Mieux naviguer sur le site" data-xitiClickTags=',Footer::Tout_savoir_Pluzz::Accessibilite,N'>Accessibilité</a>
+				<a href="http://www.francetelevisions.fr/mentionslegales/" title="Voir les mentions légales" target="_blank" data-xitiClickTags=',Footer::Tout_savoir_Pluzz::Mentions_legales,S'>Mentions légales</a>
+				<a href="http://pluzz.francetv.fr/cgu.html" title="Voir les conditions générales d'utilisation" data-xitiClickTags=',Footer::Tout_savoir_Pluzz::CGU,N'>CGU</a>
+				<a href="http://www.ftv-publicite.fr/" title="Contacter France Télévisions Publicité" target="_blank" data-xitiClickTags=',Footer::Tout_savoir_Pluzz::Devenir_annonceur,S'>Devenir annonceur</a>
+			</article>
+			<article id="footer-plus">
+				<h2>Encore plus de pluzz ?</h2>
+				<a class="appstore" target="_blank" href="http://itunes.apple.com/fr/app/france-televisions/id428835098?mt=8" title="Télécharger gratuitement l'appli francetv pluzz sur l'App Store" data-xitiClickTags=',Footer::Encore_plus_Pluzz::Appli_Iphone_Pluzz,S'></a>
+				<a class="googleplay" target="_blank" href="http://play.google.com/store/apps/details?id=fr.francetv.pluzz" title="Télécharger gratuitement l'appli francetv pluzz sur Google play" data-xitiClickTags=',Footer::Encore_plus_Pluzz::Appli_Android_Pluzz,S'></a>
+				<span class="plus-tv-sep"></span>
+				<a class="plus-tv" href="http://pluzz.francetv.fr/plus-pluzz.html" title="Voir tous les partenaires de francetv pluzz" data-xitiClickTags=',Footer::Encore_plus_Pluzz::Partenaires_Pluzz,N'><span>En savoir +</span></a>
+			</article>
+			<article id="footer-contact">
+				<h2>Garder le contact avec pluzz</h2>
+				<a href="http://www.pluzz.fr/appftv/contact/?service=225" title="Contacter francetv pluzz" target="_blank" data-xitiClickTags=',Footer::Garder_contact::Contact,S'>Contact</a>
+				<a href="http://pluzz.francetv.fr/qui.html" title="Qui sommes-nous ?" data-xitiClickTags=',Footer::Garder_contact::Qui_sommes-nous,N'>Qui sommes-nous ?</a>
+				<a href="http://pluzz.francetv.fr/rss.html" title="S'abonner aux flux RSS" data-xitiClickTags=',Footer::Garder_contact::RSS,A'>RSS</a>
+			</article>
+		</section>
+		<div xtcz="Metanav_bas">
+			<section id="metanavBottom">
+				
+			</section>
+		</div>
+	</footer>
+</div>					
+			<script type="text/javascript">
+				PLUZZ.lazyLoadLight(
+						[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+						 	'http://static-pluzz.francetv.fr/js/jquery.mousewheel.js',
+						 	'http://static-pluzz.francetv.fr/js/mwheelIntent.js',
+						 	'http://static-pluzz.francetv.fr/js/jquery.jscrollpane.min.js',
+						 	'http://cdn.echoenabled.com/clientapps/v2/backplane.js',
+						 	'http://static-pluzz.francetv.fr/js/twitter.js',
+						 	'http://static-pluzz.francetv.fr/js/jquery.cookie.js',
+						 	'http://static-pluzz.francetv.fr/js/jquery.qtip.js',
+						 	'http://static-pluzz.francetv.fr/js/tuto-social.js',
+						 	'http://platform.twitter.com/anywhere.js?id=Eff4Y4eQF9sBtyWhAV12zg',
+						 	'http://static-pluzz.francetv.fr/js/jquery.json.js',
+						 	'http://static-pluzz.francetv.fr/js/social.js'], 
+						function() {
+							init_social();
+							init_tuto_social();
+						});
+			</script>
+			<div class="layer_popin"></div>
+		</div>
+		<div id="bandeau-social">
+	<div class="wrapper-social" style="display: none;">
+		<div class="amis">
+			<span class="decouvrez"><strong>Découvrez</strong>ce qu'ils ont regardé</span>
+			<span class="avatar-amis" id="avatar-amis"></span>
+			<span class="invite-amis"></span>
+			<span class="lien-tous-amis">Voir tous<br />mes amis</span>
+			
+			<div class="tous-amis">
+
+					
+					<div class="left">
+						<h2>Mes amis <span class="nb-amis"></span></h2>
+						<!--<span class="cliquez">Cliquez sur vos amis pour voir leur activité sociale</span>-->
+						
+					</div>
+					
+					<div class="right">
+						<span class="close"></span>
+						<h2>Activités Facebook</h2>
+						
+					</div>
+					
+				<div class="amisContainer">					
+					<div class="left">
+						<div class="liste-amis" id="liste-amis"></div>
+					</div>
+					<div class="right">
+						<div class="activite-amis"></div>
+						</div>
+						
+				</div>
+			</div>
+		</div>
+		<div class="me">
+			<span class="decouvrez"><strong>Partagez</strong>vos vidéos</span>
+			<div class="me-infos"></div>
+			<a id="partage-cb" class="partage-cb"><span class="masque">désactiver le partage</span></a>
+			<a class="etat-partage" href="http://pluzz.francetv.fr/tuto-social.html" target="_blank">Partage<br />activé</a>
+			<a class="lien-activites-me">Voir mes dernières<br />activités</a>
+			<div class="activites-me">
+				<span class="close"></span>
+				<h2>Activités Facebook</h2>
+				<!--<span class="plus">Ces activités ont été publiés sur votre profil facebook (<a href="http://www.facebook.com">En savoir plus</a>)</span>-->
+				<div class="liste-activites-me"></div>
+			</div>
+			<div class="bouton"></div>
+		</div>
+		<div class="bouton btnMini">
+			
+		</div>
+	</div>
+	<div class="wrapper-incitation">
+		<span class="texte-incitation">Petites vidéos entre amis ?</span>
+		<label class="fbRegistrationRegisterButton uiButton uiButtonConfirm uiButtonLarge" id="fbRegistrationRegisterButtonPrefilled" for="fb_connect_button">
+			<input value="Connectez-vous avec Facebook" type="submit" id="fb_connect_button" onclick="xt_click(this, 'C', '10', 'Connexion_Facebook', 'A'); $('a.signin').trigger('click');">
+		</label>
+		<span class="texte-incitation-suite">Et profitez d'une expérience enrichie sur francetv pluzz</span>
+		<div class="bouton"><span></span></div>
+	</div>
+</div>
+				
+		<script type="text/javascript">
+			// Xiti
+			var xtsite = '506685';
+			var xtn2 = '1'			// Audience
+			var ftvi_portail = 'francetv';
+			var ftvi_section = 'francetvpluzz';
+			var ftvi_rubrique =  'accueil';
+			xtidmod=" ";xtergo=" ";
+			var xtpage = 'Accueil_site';
+			var xt_multc = '';
+
+			PLUZZ.lazyLoadLight(
+				[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+				 	'http://static-pluzz.francetv.fr/js/jquery.cookie.js',
+					'http://static-pluzz.francetv.fr/js/main.js'
+				],function() {
+					calc_xiti();
+					PLUZZ.lazyLoadLight(
+						[	'http://static-pluzz.francetv.fr/js/jquery-1.7.2.min.js',
+							'http://static.francetv.fr/js/audience-min.js'
+						],function() {});
+				});			
+		</script>
+		
+						<script type="text/javascript">
+var OAS_listpos   = 'Middle,Top,x02';
+var OAS_sitepage  = 'www.pluzz.fr/accueil'  
+</script>
+
+<script type="text/javascript" src="http://static.francetv.fr/js/publicite-min.js" charset="iso-8859-1"></script>
+<div class="adCall" id="eGetPubMiddle">
+  <script type="text/javascript">
+    //<![CDATA[
+    if (typeof(OAS_AD) == 'function') OAS_AD('Middle');
+    //]]>
+  </script>
+</div>
+<div class="adCall" id="eGetPubTop">
+  <script type="text/javascript">
+    //<![CDATA[
+    if (typeof(OAS_AD) == 'function') OAS_AD('Top');
+    //]]>
+  </script>
+</div>
+<div class="adCall" id="eGetPubx02">
+  <script type="text/javascript">
+    //<![CDATA[
+    if (typeof(OAS_AD) == 'function') OAS_AD('x02');
+    //]]>
+  </script>
+</div>
+		<div id="p-tooltip"><div class="p-tooltip-shadow"></div><span class="text"></span></div>
+	</body>
+</html>
