@@ -56,13 +56,13 @@
 		//node.setAttribute('charset', 'utf-8');
 
 
-		node.onload = node.onreadystatechange = function () {
+		node.onload = node.onreadystatechange = node.onerror = function () {
 			var readyState = node.readyState;
 			if (	bDone === false
 					&& ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" )
 				) {
 				// Handle memory leak in IE
-				node.onload = node.onreadystatechange = null;
+				node.onload = node.onreadystatechange = node.onerror = null;
 				finish(oFile);
 				bDone = true;
 			}
